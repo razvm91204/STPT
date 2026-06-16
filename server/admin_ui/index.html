@@ -315,7 +315,310 @@
       font-size: 1rem;
       font-weight: 500;
     }
+
+    /* ── CRUD shared ────────────────────────────────────────────── */
+    .section-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-toolbar h3 {
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-add {
+      background: var(--purple);
+      color: var(--white);
+    }
+
+    .btn-add:hover { background: var(--purple-dk); }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.8125rem;
+      border-radius: 6px;
+    }
+
+    .btn-edit {
+      background: #ede9fe;
+      color: var(--purple);
+    }
+
+    .btn-edit:hover { background: #ddd6fe; }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .btn-danger:hover { background: #fecaca; }
+
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-secondary:hover { background: #e8e4f5; }
+
+    .btn-save {
+      background: var(--purple);
+      color: var(--white);
+    }
+
+    .btn-save:hover { background: var(--purple-dk); }
+
+    .btn-up-down {
+      background: #f3f4f6;
+      color: #374151;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+
+    .btn-up-down:hover { background: #e5e7eb; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .data-table th {
+      background: #f8f7fd;
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: middle;
+    }
+
+    .data-table tr:last-child td { border-bottom: none; }
+
+    .data-table tr:hover td { background: #faf9fe; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-tram  { background: #fef3c7; color: #92400e; }
+    .badge-bus   { background: #dbeafe; color: #1e40af; }
+    .badge-met   { background: #ede9fe; color: #5b21b6; }
+
+    .toggle-active {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--purple);
+    }
+
+    /* Inline form panel */
+    .form-panel {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .form-panel h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      align-items: flex-end;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .form-field label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .form-field input,
+    .form-field select {
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus {
+      border-color: var(--purple);
+    }
+
+    .form-field input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--purple);
+      margin-top: 4px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .inline-error {
+      color: var(--error);
+      font-size: 0.825rem;
+      margin-top: 8px;
+      min-height: 1.2em;
+    }
+
+    /* Map */
+    #station-map {
+      height: 320px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    /* Drawer / route editor */
+    .route-editor {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 20px;
+    }
+
+    .route-editor h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .route-directions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .direction-panel {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .direction-panel .dir-header {
+      background: #f8f7fd;
+      padding: 10px 14px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .direction-panel .dir-stations {
+      list-style: none;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .direction-panel .dir-stations li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+
+    .direction-panel .dir-stations li:last-child { border-bottom: none; }
+
+    .station-name-text { flex: 1; }
+
+    .dir-add-row {
+      display: flex;
+      gap: 8px;
+      padding: 10px 12px;
+      background: #faf9fe;
+      border-top: 1px solid var(--border);
+    }
+
+    .dir-add-row input {
+      flex: 1;
+      padding: 7px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .dir-add-row input:focus { border-color: var(--purple); }
+
+    .route-editor-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
   </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -377,26 +680,147 @@
         <span class="user-badge" id="user-badge">—</span>
       </div>
       <div class="content">
+        <!-- ── Linii section ────────────────────────────────────── -->
         <section id="section-linii">
-          <div class="section-header">
+          <div class="section-toolbar">
             <h3>Linii</h3>
-            <p class="subtitle">Gestionare linii de transport public.</p>
+            <button class="btn btn-add" onclick="showLineForm()">+ Adaugă linie</button>
           </div>
-          <div class="placeholder-card">
-            <div class="placeholder-icon">🚌</div>
-            <p>Gestionare linii — în curând.</p>
+
+          <!-- Add / Edit line form -->
+          <div id="line-form-panel" class="form-panel" style="display:none;">
+            <h4 id="line-form-title">Adaugă linie nouă</h4>
+            <div class="form-row">
+              <div class="form-field">
+                <label>ID linie</label>
+                <input type="text" id="lf-id" placeholder="ex: 1, E1, 46" />
+              </div>
+              <div class="form-field">
+                <label>Tip</label>
+                <select id="lf-type">
+                  <option value="tram">Tramvai</option>
+                  <option value="bus">Autobuz</option>
+                  <option value="met">Express</option>
+                </select>
+              </div>
+              <div class="form-field" style="flex:0; min-width:80px;">
+                <label>Activ</label>
+                <input type="checkbox" id="lf-active" checked />
+              </div>
+            </div>
+            <div class="inline-error" id="line-form-error"></div>
+            <div class="form-actions">
+              <button class="btn btn-save" onclick="saveLineForm()">Salvează</button>
+              <button class="btn btn-secondary" onclick="hideLineForm()">Anulează</button>
+            </div>
           </div>
+
+          <div id="lines-error" class="inline-error"></div>
+
+          <table class="data-table" id="lines-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tip</th>
+                <th>Activ</th>
+                <th>Stații (dus)</th>
+                <th>Stații (intors)</th>
+                <th>Acțiuni</th>
+              </tr>
+            </thead>
+            <tbody id="lines-tbody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Se încarcă...</td></tr>
+            </tbody>
+          </table>
+
+          <!-- Route editor drawer -->
+          <div id="route-editor" class="route-editor" style="display:none;">
+            <h4 id="route-editor-title">Traseu linie</h4>
+            <div class="route-directions">
+              <div class="direction-panel">
+                <div class="dir-header">
+                  <span>Dus</span>
+                  <span id="dus-count" style="color:var(--muted);font-weight:400;font-size:0.8rem;"></span>
+                </div>
+                <ul class="dir-stations" id="dus-stations"></ul>
+                <div class="dir-add-row">
+                  <input type="text" id="dus-add-input" placeholder="Nume stație..." list="stations-datalist" />
+                  <button class="btn btn-add btn-sm" onclick="addStationToDir('dus')">Adaugă</button>
+                </div>
+              </div>
+              <div class="direction-panel">
+                <div class="dir-header">
+                  <span>Intors</span>
+                  <span id="intors-count" style="color:var(--muted);font-weight:400;font-size:0.8rem;"></span>
+                </div>
+                <ul class="dir-stations" id="intors-stations"></ul>
+                <div class="dir-add-row">
+                  <input type="text" id="intors-add-input" placeholder="Nume stație..." list="stations-datalist" />
+                  <button class="btn btn-add btn-sm" onclick="addStationToDir('intors')">Adaugă</button>
+                </div>
+              </div>
+            </div>
+            <div id="route-editor-error" class="inline-error"></div>
+            <div class="route-editor-actions">
+              <button class="btn btn-secondary" onclick="closeRouteEditor()">Închide</button>
+            </div>
+          </div>
+
+          <!-- Hidden datalist for station autocomplete -->
+          <datalist id="stations-datalist"></datalist>
         </section>
 
+        <!-- ── Stații section ────────────────────────────────────── -->
         <section id="section-statii">
-          <div class="section-header">
+          <div class="section-toolbar">
             <h3>Stații</h3>
-            <p class="subtitle">Gestionare stații de transport public.</p>
+            <button class="btn btn-add" onclick="showStationForm(null)">+ Adaugă stație</button>
           </div>
-          <div class="placeholder-card">
-            <div class="placeholder-icon">📍</div>
-            <p>Gestionare stații — în curând.</p>
+
+          <!-- Add / Edit station form -->
+          <div id="station-form-panel" class="form-panel" style="display:none;">
+            <h4 id="station-form-title">Adaugă stație nouă</h4>
+            <div class="form-row">
+              <div class="form-field" style="flex:2;">
+                <label>Nume stație</label>
+                <input type="text" id="sf-name" placeholder="ex: Piața Victoriei" />
+              </div>
+              <div class="form-field">
+                <label>Latitudine</label>
+                <input type="number" id="sf-lat" step="0.000001" placeholder="45.748900" oninput="onLatLonInput()" />
+              </div>
+              <div class="form-field">
+                <label>Longitudine</label>
+                <input type="number" id="sf-lon" step="0.000001" placeholder="21.208700" oninput="onLatLonInput()" />
+              </div>
+              <div class="form-field" style="flex:0; min-width:140px;">
+                <label>&nbsp;</label>
+                <button class="btn btn-secondary btn-sm" onclick="geocodeReverse()" style="white-space:nowrap;">Caută pe OSM</button>
+              </div>
+            </div>
+            <div id="station-map"></div>
+            <div class="inline-error" id="station-form-error"></div>
+            <div class="form-actions">
+              <button class="btn btn-save" onclick="saveStationForm()">Salvează</button>
+              <button class="btn btn-secondary" onclick="hideStationForm()">Anulează</button>
+            </div>
           </div>
+
+          <div id="stations-error" class="inline-error"></div>
+
+          <table class="data-table" id="stations-table">
+            <thead>
+              <tr>
+                <th>Nume</th>
+                <th>Latitudine</th>
+                <th>Longitudine</th>
+                <th>Acțiuni</th>
+              </tr>
+            </thead>
+            <tbody id="stations-tbody">
+              <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px;">Se încarcă...</td></tr>
+            </tbody>
+          </table>
         </section>
 
         <section id="section-orare">
@@ -443,6 +867,12 @@
         location.reload();
         return null;
       }
+      return res;
+    }
+
+    async function apiFetchJSON(path, options = {}) {
+      const res = await apiFetch(path, options);
+      if (!res) return null;
       return res.json();
     }
 
@@ -504,9 +934,7 @@
     };
 
     function navigateTo(key) {
-      // Hide all sections
       document.querySelectorAll('.content section').forEach(s => s.classList.remove('active'));
-      // Remove active from all nav links
       document.querySelectorAll('.nav-link').forEach(a => a.classList.remove('active'));
 
       const section = document.getElementById(`section-${key}`);
@@ -516,6 +944,9 @@
       if (link) link.classList.add('active');
 
       document.getElementById('topbar-title').textContent = sectionTitles[key] || key;
+
+      if (key === 'linii') loadLines();
+      if (key === 'statii') loadStations();
     }
 
     document.querySelectorAll('.nav-link').forEach(link => {
@@ -525,6 +956,497 @@
       });
     });
 
+    // ════════════════════════════════════════════════════════════
+    //  LINII
+    // ════════════════════════════════════════════════════════════
+
+    let linesData = [];       // cache: [{id, type, active}]
+    let lineFormMode = 'add'; // 'add' | 'edit'
+    let lineFormEditId = null;
+    let routeEditorLineId = null;
+    let routeStructure = { dus: [], intors: [] };
+
+    function typeBadge(type) {
+      const map = { tram: ['badge-tram', 'Tramvai'], bus: ['badge-bus', 'Autobuz'], met: ['badge-met', 'Express'] };
+      const [cls, label] = map[type] || ['badge-bus', type];
+      return `<span class="badge ${cls}">${label}</span>`;
+    }
+
+    async function loadLines() {
+      const tbody = document.getElementById('lines-tbody');
+      const errEl = document.getElementById('lines-error');
+      errEl.textContent = '';
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Se încarcă...</td></tr>';
+
+      const data = await apiFetchJSON('/api/admin/lines');
+      if (!data) return;
+      linesData = data;
+
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Nicio linie adăugată.</td></tr>';
+        return;
+      }
+
+      // Fetch structures in parallel to get station counts
+      const structures = await Promise.all(
+        data.map(l => apiFetchJSON(`/api/admin/lines/${encodeURIComponent(l.id)}/structure`))
+      );
+
+      tbody.innerHTML = '';
+      data.forEach((line, i) => {
+        const struct = structures[i] || { dus: [], intors: [] };
+        const dusCnt = (struct.dus || []).length;
+        const intorsCnt = (struct.intors || []).length;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${escHtml(line.id)}</strong></td>
+          <td>${typeBadge(line.type)}</td>
+          <td><input type="checkbox" class="toggle-active" ${line.active ? 'checked' : ''} onchange="toggleLineActive('${escAttr(line.id)}', this.checked)" /></td>
+          <td>${dusCnt}</td>
+          <td>${intorsCnt}</td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-edit btn-sm" onclick="openRouteEditor('${escAttr(line.id)}')">Editează traseu</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteLine('${escAttr(line.id)}')">Șterge</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Keep datalist for station autocomplete up to date
+      refreshStationsDatalist();
+    }
+
+    async function toggleLineActive(lineId, checked) {
+      const line = linesData.find(l => l.id === lineId);
+      if (!line) return;
+      const res = await apiFetch(`/api/admin/lines/${encodeURIComponent(lineId)}`, {
+        method: 'PUT',
+        body: JSON.stringify({ type: line.type, active: checked ? 1 : 0 }),
+      });
+      if (res && !res.ok) {
+        const errEl = document.getElementById('lines-error');
+        const err = await res.json().catch(() => ({}));
+        errEl.textContent = err.detail || 'Eroare la actualizare.';
+        loadLines();
+      } else {
+        line.active = checked ? 1 : 0;
+      }
+    }
+
+    async function deleteLine(lineId) {
+      if (!confirm(`Ești sigur că vrei să ștergi linia "${lineId}"? Aceasta va șterge și stațiile și orarele asociate.`)) return;
+      const res = await apiFetch(`/api/admin/lines/${encodeURIComponent(lineId)}`, { method: 'DELETE' });
+      if (res && !res.ok) {
+        const errEl = document.getElementById('lines-error');
+        const err = await res.json().catch(() => ({}));
+        errEl.textContent = err.detail || 'Eroare la ștergere.';
+      } else {
+        loadLines();
+      }
+    }
+
+    function showLineForm(lineId) {
+      hideRouteEditor();
+      const panel = document.getElementById('line-form-panel');
+      const title = document.getElementById('line-form-title');
+      document.getElementById('line-form-error').textContent = '';
+
+      if (lineId) {
+        lineFormMode = 'edit';
+        lineFormEditId = lineId;
+        title.textContent = `Editează linia ${lineId}`;
+        const line = linesData.find(l => l.id === lineId);
+        if (line) {
+          document.getElementById('lf-id').value = line.id;
+          document.getElementById('lf-type').value = line.type;
+          document.getElementById('lf-active').checked = !!line.active;
+        }
+        document.getElementById('lf-id').disabled = true;
+      } else {
+        lineFormMode = 'add';
+        lineFormEditId = null;
+        title.textContent = 'Adaugă linie nouă';
+        document.getElementById('lf-id').value = '';
+        document.getElementById('lf-type').value = 'tram';
+        document.getElementById('lf-active').checked = true;
+        document.getElementById('lf-id').disabled = false;
+      }
+      panel.style.display = '';
+    }
+
+    function hideLineForm() {
+      document.getElementById('line-form-panel').style.display = 'none';
+      document.getElementById('lf-id').disabled = false;
+    }
+
+    async function saveLineForm() {
+      const errEl = document.getElementById('line-form-error');
+      errEl.textContent = '';
+      const id = document.getElementById('lf-id').value.trim();
+      const type = document.getElementById('lf-type').value;
+      const active = document.getElementById('lf-active').checked ? 1 : 0;
+
+      if (!id && lineFormMode === 'add') { errEl.textContent = 'ID-ul liniei este obligatoriu.'; return; }
+
+      let res;
+      if (lineFormMode === 'add') {
+        res = await apiFetch('/api/admin/lines', {
+          method: 'POST',
+          body: JSON.stringify({ id, type, active }),
+        });
+      } else {
+        res = await apiFetch(`/api/admin/lines/${encodeURIComponent(lineFormEditId)}`, {
+          method: 'PUT',
+          body: JSON.stringify({ type, active }),
+        });
+      }
+
+      if (!res) return;
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        errEl.textContent = err.detail || 'Eroare la salvare.';
+        return;
+      }
+      hideLineForm();
+      loadLines();
+    }
+
+    // ── Route editor ─────────────────────────────────────────────
+
+    async function openRouteEditor(lineId) {
+      hideLineForm();
+      routeEditorLineId = lineId;
+      document.getElementById('route-editor-title').textContent = `Traseu linia ${lineId}`;
+      document.getElementById('route-editor-error').textContent = '';
+
+      const struct = await apiFetchJSON(`/api/admin/lines/${encodeURIComponent(lineId)}/structure`);
+      if (!struct) return;
+      routeStructure = struct;
+      renderRouteEditor();
+      document.getElementById('route-editor').style.display = '';
+      document.getElementById('route-editor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function closeRouteEditor() {
+      document.getElementById('route-editor').style.display = 'none';
+      routeEditorLineId = null;
+    }
+
+    function hideRouteEditor() {
+      document.getElementById('route-editor').style.display = 'none';
+    }
+
+    function renderRouteEditor() {
+      renderDirList('dus');
+      renderDirList('intors');
+    }
+
+    function renderDirList(dir) {
+      const stations = routeStructure[dir] || [];
+      const ul = document.getElementById(`${dir}-stations`);
+      const countEl = document.getElementById(`${dir}-count`);
+      countEl.textContent = `${stations.length} stații`;
+      ul.innerHTML = '';
+      stations.forEach((name, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <button class="btn btn-up-down btn-sm" onclick="moveStation('${dir}',${idx},-1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
+          <button class="btn btn-up-down btn-sm" onclick="moveStation('${dir}',${idx},1)" ${idx === stations.length - 1 ? 'disabled' : ''}>▼</button>
+          <span class="station-name-text">${escHtml(name)}</span>
+          <button class="btn btn-danger btn-sm" onclick="removeStationFromDir('${dir}', '${escAttr(name)}')">Șterge</button>
+        `;
+        ul.appendChild(li);
+      });
+    }
+
+    async function moveStation(dir, idx, delta) {
+      const stations = [...(routeStructure[dir] || [])];
+      const newIdx = idx + delta;
+      if (newIdx < 0 || newIdx >= stations.length) return;
+      [stations[idx], stations[newIdx]] = [stations[newIdx], stations[idx]];
+
+      const res = await apiFetch(`/api/admin/lines/${encodeURIComponent(routeEditorLineId)}/structure`, {
+        method: 'PUT',
+        body: JSON.stringify({ direction: dir, stations }),
+      });
+      if (!res) return;
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        document.getElementById('route-editor-error').textContent = err.detail || 'Eroare la reordonare.';
+        return;
+      }
+      routeStructure[dir] = stations;
+      renderDirList(dir);
+      loadLines(); // update counts in table
+    }
+
+    async function removeStationFromDir(dir, stationName) {
+      if (!confirm(`Ștergi stația "${stationName}" din direcția ${dir}?`)) return;
+      const res = await apiFetch(
+        `/api/admin/lines/${encodeURIComponent(routeEditorLineId)}/structure/${encodeURIComponent(dir)}/${encodeURIComponent(stationName)}`,
+        { method: 'DELETE' }
+      );
+      if (!res) return;
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        document.getElementById('route-editor-error').textContent = err.detail || 'Eroare la ștergere.';
+        return;
+      }
+      routeStructure[dir] = (routeStructure[dir] || []).filter(s => s !== stationName);
+      renderDirList(dir);
+      loadLines();
+    }
+
+    async function addStationToDir(dir) {
+      const input = document.getElementById(`${dir}-add-input`);
+      const stationName = input.value.trim();
+      if (!stationName) return;
+
+      const res = await apiFetch(
+        `/api/admin/lines/${encodeURIComponent(routeEditorLineId)}/structure/${encodeURIComponent(dir)}/add`,
+        { method: 'POST', body: JSON.stringify({ station_name: stationName }) }
+      );
+      if (!res) return;
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        document.getElementById('route-editor-error').textContent = err.detail || 'Eroare la adăugare.';
+        return;
+      }
+      input.value = '';
+      document.getElementById('route-editor-error').textContent = '';
+      if (!routeStructure[dir]) routeStructure[dir] = [];
+      routeStructure[dir].push(stationName);
+      renderDirList(dir);
+      loadLines();
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  STAȚII
+    // ════════════════════════════════════════════════════════════
+
+    let stationsData = [];
+    let stationFormMode = 'add'; // 'add' | 'edit'
+    let stationFormEditName = null;
+    let stationMap = null;
+    let stationMarker = null;
+
+    async function loadStations() {
+      const tbody = document.getElementById('stations-tbody');
+      const errEl = document.getElementById('stations-error');
+      errEl.textContent = '';
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px;">Se încarcă...</td></tr>';
+
+      const data = await apiFetchJSON('/api/admin/stations');
+      if (!data) return;
+      stationsData = data;
+
+      refreshStationsDatalist();
+
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px;">Nicio stație adăugată.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      data.forEach(st => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${escHtml(st.name)}</strong></td>
+          <td>${st.lat != null ? st.lat.toFixed(6) : '—'}</td>
+          <td>${st.lon != null ? st.lon.toFixed(6) : '—'}</td>
+          <td style="display:flex;gap:6px;">
+            <button class="btn btn-edit btn-sm" onclick="showStationForm('${escAttr(st.name)}')">Editează</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteStation('${escAttr(st.name)}')">Șterge</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function refreshStationsDatalist() {
+      const dl = document.getElementById('stations-datalist');
+      if (!dl) return;
+      dl.innerHTML = '';
+      stationsData.forEach(st => {
+        const opt = document.createElement('option');
+        opt.value = st.name;
+        dl.appendChild(opt);
+      });
+    }
+
+    async function deleteStation(name) {
+      if (!confirm(`Ești sigur că vrei să ștergi stația "${name}"?`)) return;
+      const res = await apiFetch(`/api/admin/stations/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      if (res && !res.ok) {
+        const errEl = document.getElementById('stations-error');
+        const err = await res.json().catch(() => ({}));
+        errEl.textContent = err.detail || 'Eroare la ștergere.';
+      } else {
+        loadStations();
+      }
+    }
+
+    function showStationForm(name) {
+      const panel = document.getElementById('station-form-panel');
+      const title = document.getElementById('station-form-title');
+      document.getElementById('station-form-error').textContent = '';
+
+      if (name) {
+        stationFormMode = 'edit';
+        stationFormEditName = name;
+        title.textContent = `Editează stația: ${name}`;
+        const st = stationsData.find(s => s.name === name);
+        document.getElementById('sf-name').value = st ? st.name : name;
+        document.getElementById('sf-lat').value = st ? st.lat : '';
+        document.getElementById('sf-lon').value = st ? st.lon : '';
+      } else {
+        stationFormMode = 'add';
+        stationFormEditName = null;
+        title.textContent = 'Adaugă stație nouă';
+        document.getElementById('sf-name').value = '';
+        document.getElementById('sf-lat').value = '';
+        document.getElementById('sf-lon').value = '';
+      }
+
+      panel.style.display = '';
+
+      // Init / update Leaflet map after the panel becomes visible
+      setTimeout(() => initStationMap(), 50);
+    }
+
+    function hideStationForm() {
+      document.getElementById('station-form-panel').style.display = 'none';
+    }
+
+    function initStationMap() {
+      const defaultCenter = [45.7489, 21.2087];
+      const lat = parseFloat(document.getElementById('sf-lat').value);
+      const lon = parseFloat(document.getElementById('sf-lon').value);
+      const center = (isFinite(lat) && isFinite(lon)) ? [lat, lon] : defaultCenter;
+
+      if (!stationMap) {
+        stationMap = L.map('station-map').setView(center, 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors',
+          maxZoom: 19,
+        }).addTo(stationMap);
+
+        stationMap.on('click', (e) => {
+          setMapMarker(e.latlng.lat, e.latlng.lng);
+          document.getElementById('sf-lat').value = e.latlng.lat.toFixed(6);
+          document.getElementById('sf-lon').value = e.latlng.lng.toFixed(6);
+        });
+      } else {
+        stationMap.invalidateSize();
+        stationMap.setView(center, 13);
+      }
+
+      if (stationMarker) {
+        stationMarker.setLatLng(center);
+      } else {
+        stationMarker = L.marker(center, { draggable: true }).addTo(stationMap);
+        stationMarker.on('dragend', (e) => {
+          const latlng = e.target.getLatLng();
+          document.getElementById('sf-lat').value = latlng.lat.toFixed(6);
+          document.getElementById('sf-lon').value = latlng.lng.toFixed(6);
+        });
+      }
+
+      if (!isFinite(lat) || !isFinite(lon)) {
+        stationMarker.setOpacity(0);
+      } else {
+        stationMarker.setOpacity(1);
+        stationMarker.setLatLng([lat, lon]);
+      }
+    }
+
+    function setMapMarker(lat, lon) {
+      if (!stationMap || !stationMarker) return;
+      stationMarker.setLatLng([lat, lon]);
+      stationMarker.setOpacity(1);
+      stationMap.setView([lat, lon], stationMap.getZoom());
+    }
+
+    function onLatLonInput() {
+      const lat = parseFloat(document.getElementById('sf-lat').value);
+      const lon = parseFloat(document.getElementById('sf-lon').value);
+      if (isFinite(lat) && isFinite(lon)) {
+        setMapMarker(lat, lon);
+      }
+    }
+
+    async function geocodeReverse() {
+      const lat = parseFloat(document.getElementById('sf-lat').value);
+      const lon = parseFloat(document.getElementById('sf-lon').value);
+      if (!isFinite(lat) || !isFinite(lon)) {
+        document.getElementById('station-form-error').textContent = 'Introduceți lat/lon înainte de a căuta.';
+        return;
+      }
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
+          { headers: { 'Accept-Language': 'ro' } }
+        );
+        const data = await res.json();
+        const name = (data.address && data.address.road) || data.display_name || '';
+        if (name) {
+          document.getElementById('sf-name').value = name.trim();
+          document.getElementById('station-form-error').textContent = '';
+        } else {
+          document.getElementById('station-form-error').textContent = 'Nicio locație găsită pe OSM.';
+        }
+      } catch {
+        document.getElementById('station-form-error').textContent = 'Eroare la căutarea OSM.';
+      }
+    }
+
+    async function saveStationForm() {
+      const errEl = document.getElementById('station-form-error');
+      errEl.textContent = '';
+      const name = document.getElementById('sf-name').value.trim();
+      const lat = parseFloat(document.getElementById('sf-lat').value);
+      const lon = parseFloat(document.getElementById('sf-lon').value);
+
+      if (!name) { errEl.textContent = 'Numele stației este obligatoriu.'; return; }
+      if (!isFinite(lat) || !isFinite(lon)) { errEl.textContent = 'Latitudinea și longitudinea sunt obligatorii.'; return; }
+
+      let res;
+      if (stationFormMode === 'add') {
+        res = await apiFetch('/api/admin/stations', {
+          method: 'POST',
+          body: JSON.stringify({ name, lat, lon }),
+        });
+      } else {
+        res = await apiFetch(`/api/admin/stations/${encodeURIComponent(stationFormEditName)}`, {
+          method: 'PUT',
+          body: JSON.stringify({ name, lat, lon }),
+        });
+      }
+
+      if (!res) return;
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        errEl.textContent = err.detail || 'Eroare la salvare.';
+        return;
+      }
+      hideStationForm();
+      loadStations();
+    }
+
+    // ── Utilities ─────────────────────────────────────────────────
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function escAttr(str) {
+      return String(str).replace(/'/g, "\\'");
+    }
+
     // ── Bootstrap ───────────────────────────────────────────────
     (async function init() {
       const token = getToken();
@@ -532,7 +1454,6 @@
         showLogin();
         return;
       }
-      // Validate token by calling /api/admin/me
       try {
         const res = await fetch('/api/admin/me', {
           headers: { 'Authorization': `Bearer ${token}` },
@@ -545,7 +1466,6 @@
           showLogin();
         }
       } catch {
-        // Server unreachable — show login anyway
         showLogin();
       }
     })();
