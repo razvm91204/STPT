@@ -484,11 +484,25 @@ async def publish():
     network_path = os.path.join(_REPO_ROOT, "network_data.js")
     coords_path = os.path.join(_REPO_ROOT, "stations_coords.js")
 
+    # Write via temp files so a partial failure doesn't leave split state
     try:
-        with open(network_path, "w", encoding="utf-8") as f:
-            f.write(network_js)
-        with open(coords_path, "w", encoding="utf-8") as f:
-            f.write(coords_js)
+        import tempfile, shutil as _shutil
+        def _atomic_write(path: str, content: str) -> None:
+            dir_ = os.path.dirname(path) or "."
+            fd, tmp = tempfile.mkstemp(dir=dir_, prefix=".publish_tmp_")
+            try:
+                with os.fdopen(fd, "w", encoding="utf-8") as f:
+                    f.write(content)
+                _shutil.move(tmp, path)
+            except Exception:
+                try:
+                    os.unlink(tmp)
+                except OSError:
+                    pass
+                raise
+
+        _atomic_write(network_path, network_js)
+        _atomic_write(coords_path, coords_js)
     except OSError as exc:
         raise HTTPException(status_code=500, detail=f"Failed to write files: {exc}")
 
