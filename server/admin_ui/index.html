@@ -1,1 +1,554 @@
-<!DOCTYPE html><html><body><h1>Admin — Coming Soon</h1></body></html>
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STPT Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple:    #5c4fd5;
+      --purple-dk: #4a3eb8;
+      --dark:      #12102b;
+      --sidebar:   #1e1b3a;
+      --sidebar-hover: #2d2952;
+      --sidebar-active: #5c4fd5;
+      --bg:        #f2eff9;
+      --white:     #ffffff;
+      --text:      #1a1a2e;
+      --muted:     #6b7280;
+      --border:    #e5e0f5;
+      --error:     #dc2626;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Login overlay ─────────────────────────────────────────── */
+    #login-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    #login-overlay.hidden { display: none; }
+
+    .login-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .login-card .brand {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-card .brand h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--purple);
+      letter-spacing: -0.5px;
+    }
+
+    .login-card .brand p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-group input:focus {
+      border-color: var(--purple);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 11px 20px;
+      background: var(--purple);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-primary:hover  { background: var(--purple-dk); }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .login-error {
+      color: var(--error);
+      font-size: 0.8125rem;
+      text-align: center;
+      margin-top: 12px;
+      min-height: 1.2em;
+    }
+
+    /* ── App shell ──────────────────────────────────────────────── */
+    #app {
+      display: flex;
+      height: 100vh;
+    }
+
+    #app.hidden { display: none; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--sidebar);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.3px;
+    }
+
+    .sidebar-header span {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      display: block;
+      margin-top: 2px;
+    }
+
+    nav {
+      flex: 1;
+      padding: 16px 12px;
+      overflow-y: auto;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      margin-bottom: 2px;
+    }
+
+    nav a:hover {
+      background: var(--sidebar-hover);
+      color: var(--white);
+    }
+
+    nav a.active {
+      background: var(--sidebar-active);
+      color: var(--white);
+    }
+
+    nav a .nav-icon {
+      font-size: 1.05rem;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .btn-logout {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.55);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(220,38,38,0.15);
+      border-color: rgba(220,38,38,0.4);
+      color: #fca5a5;
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .topbar {
+      padding: 20px 32px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .topbar h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .topbar .user-badge {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      background: var(--bg);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px;
+    }
+
+    section {
+      display: none;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    .section-header {
+      margin-bottom: 24px;
+    }
+
+    .section-header h3 {
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .section-header p.subtitle {
+      margin-top: 4px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .placeholder-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px 32px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .placeholder-card .placeholder-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .placeholder-card p {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Login overlay ─────────────────────────────────────── -->
+  <div id="login-overlay">
+    <div class="login-card">
+      <div class="brand">
+        <h1>STPT Admin</h1>
+        <p>Panoul de administrare</p>
+      </div>
+      <form id="login-form" autocomplete="off">
+        <div class="form-group">
+          <label for="username">Utilizator</label>
+          <input type="text" id="username" name="username" placeholder="admin" required autofocus />
+        </div>
+        <div class="form-group">
+          <label for="password">Parolă</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn-primary">Autentificare</button>
+        <div class="login-error" id="login-error"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── App shell ─────────────────────────────────────────── -->
+  <div id="app" class="hidden">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>STPT Admin</h1>
+        <span>Panou de administrare</span>
+      </div>
+
+      <nav>
+        <a class="nav-link" data-section="linii" href="#">
+          <span class="nav-icon">🚌</span> Linii
+        </a>
+        <a class="nav-link" data-section="statii" href="#">
+          <span class="nav-icon">📍</span> Stații
+        </a>
+        <a class="nav-link" data-section="orare" href="#">
+          <span class="nav-icon">🕐</span> Orare
+        </a>
+        <a class="nav-link" data-section="publish" href="#">
+          <span class="nav-icon">🚀</span> Publish
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn-logout" id="logout-btn">
+          <span>⬅</span> Deconectare
+        </button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <h2 id="topbar-title">Linii</h2>
+        <span class="user-badge" id="user-badge">—</span>
+      </div>
+      <div class="content">
+        <section id="section-linii">
+          <div class="section-header">
+            <h3>Linii</h3>
+            <p class="subtitle">Gestionare linii de transport public.</p>
+          </div>
+          <div class="placeholder-card">
+            <div class="placeholder-icon">🚌</div>
+            <p>Gestionare linii — în curând.</p>
+          </div>
+        </section>
+
+        <section id="section-statii">
+          <div class="section-header">
+            <h3>Stații</h3>
+            <p class="subtitle">Gestionare stații de transport public.</p>
+          </div>
+          <div class="placeholder-card">
+            <div class="placeholder-icon">📍</div>
+            <p>Gestionare stații — în curând.</p>
+          </div>
+        </section>
+
+        <section id="section-orare">
+          <div class="section-header">
+            <h3>Orare</h3>
+            <p class="subtitle">Editare orare pentru fiecare linie și stație.</p>
+          </div>
+          <div class="placeholder-card">
+            <div class="placeholder-icon">🕐</div>
+            <p>Editor orare — în curând.</p>
+          </div>
+        </section>
+
+        <section id="section-publish">
+          <div class="section-header">
+            <h3>Publish</h3>
+            <p class="subtitle">Publică modificările pentru aplicația publică.</p>
+          </div>
+          <div class="placeholder-card">
+            <div class="placeholder-icon">🚀</div>
+            <p>Publică modificările — în curând.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TOKEN_KEY = 'stpt_token';
+
+    // ── API helper ──────────────────────────────────────────────
+    async function apiFetch(path, options = {}) {
+      const token = localStorage.getItem(TOKEN_KEY);
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const res = await fetch(path, { ...options, headers });
+      if (res.status === 401) {
+        localStorage.removeItem(TOKEN_KEY);
+        location.reload();
+        return null;
+      }
+      return res.json();
+    }
+
+    // ── Auth flow ───────────────────────────────────────────────
+    function getToken() { return localStorage.getItem(TOKEN_KEY); }
+    function setToken(t) { localStorage.setItem(TOKEN_KEY, t); }
+    function clearToken() { localStorage.removeItem(TOKEN_KEY); }
+
+    function showApp(username) {
+      document.getElementById('login-overlay').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('user-badge').textContent = username || 'admin';
+      navigateTo('linii');
+    }
+
+    function showLogin() {
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('login-overlay').classList.remove('hidden');
+    }
+
+    // ── Login form ──────────────────────────────────────────────
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('login-error');
+      errorEl.textContent = '';
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        if (!res.ok) {
+          errorEl.textContent = 'Credențiale incorecte';
+          return;
+        }
+        const data = await res.json();
+        setToken(data.access_token);
+        showApp(username);
+      } catch {
+        errorEl.textContent = 'Eroare de conexiune. Încearcă din nou.';
+      }
+    });
+
+    // ── Logout ──────────────────────────────────────────────────
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      clearToken();
+      location.reload();
+    });
+
+    // ── Navigation ──────────────────────────────────────────────
+    const sectionTitles = {
+      linii:   'Linii',
+      statii:  'Stații',
+      orare:   'Orare',
+      publish: 'Publish',
+    };
+
+    function navigateTo(key) {
+      // Hide all sections
+      document.querySelectorAll('.content section').forEach(s => s.classList.remove('active'));
+      // Remove active from all nav links
+      document.querySelectorAll('.nav-link').forEach(a => a.classList.remove('active'));
+
+      const section = document.getElementById(`section-${key}`);
+      if (section) section.classList.add('active');
+
+      const link = document.querySelector(`.nav-link[data-section="${key}"]`);
+      if (link) link.classList.add('active');
+
+      document.getElementById('topbar-title').textContent = sectionTitles[key] || key;
+    }
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigateTo(link.dataset.section);
+      });
+    });
+
+    // ── Bootstrap ───────────────────────────────────────────────
+    (async function init() {
+      const token = getToken();
+      if (!token) {
+        showLogin();
+        return;
+      }
+      // Validate token by calling /api/admin/me
+      try {
+        const res = await fetch('/api/admin/me', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          showApp(data.username);
+        } else {
+          clearToken();
+          showLogin();
+        }
+      } catch {
+        // Server unreachable — show login anyway
+        showLogin();
+      }
+    })();
+  </script>
+</body>
+</html>
