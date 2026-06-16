@@ -1685,6 +1685,7 @@
     let schStation   = '';
     let schDayType   = 'scoala';
     let schSchedule  = {}; // {hour_str: [minutes]}
+    let schSaveCtrl  = null; // AbortController for in-flight saves
 
     // Called when the Orare section is activated
     async function loadOrarSection() {
@@ -1815,6 +1816,7 @@
 
     function clearScheduleGrid() {
       schSchedule = {};
+      if (schSaveCtrl) { schSaveCtrl.abort(); schSaveCtrl = null; }
       const wrap = document.getElementById('schedule-grid-wrap');
       wrap.innerHTML = '<div class="schedule-grid-empty">Selectați o linie, direcție, stație și tip de zi pentru a edita orarul.</div>';
     }
@@ -1953,7 +1955,12 @@
 
     async function removeMinute(hourStr, minute) {
       const current = [...(schSchedule[hourStr] || [])].filter(m => m !== minute);
-      schSchedule[hourStr] = current;
+      // Delete the key entirely when empty — keeps representation consistent with server
+      if (current.length === 0) {
+        delete schSchedule[hourStr];
+      } else {
+        schSchedule[hourStr] = current;
+      }
 
       const chipsWrap = document.getElementById(`chips-${hourStr}`);
       renderChips(chipsWrap, hourStr, current.sort((a, b) => a - b));
@@ -1964,15 +1971,24 @@
     async function saveScheduleRow(hourStr) {
       const statusEl = document.getElementById(`row-status-${hourStr}`);
       if (!statusEl) return;
+
+      // Snapshot context + schedule before any await to prevent stale-closure bugs
+      const url = `/api/admin/schedules/${encodeURIComponent(schLineId)}/${encodeURIComponent(schDir)}/${encodeURIComponent(schStation)}/${encodeURIComponent(schDayType)}`;
+      const scheduleSnapshot = JSON.parse(JSON.stringify(schSchedule));
+
+      // Cancel any previous in-flight save (prevents race on rapid edits)
+      if (schSaveCtrl) schSaveCtrl.abort();
+      schSaveCtrl = new AbortController();
+      const signal = schSaveCtrl.signal;
+
       statusEl.className = 'row-status-cell row-status-saving';
       statusEl.textContent = '…';
-
-      const url = `/api/admin/schedules/${encodeURIComponent(schLineId)}/${encodeURIComponent(schDir)}/${encodeURIComponent(schStation)}/${encodeURIComponent(schDayType)}`;
 
       try {
         const res = await apiFetch(url, {
           method: 'PUT',
-          body: JSON.stringify({ schedule: schSchedule }),
+          body: JSON.stringify({ schedule: scheduleSnapshot }),
+          signal,
         });
         if (!res) { statusEl.textContent = ''; return; }
 
@@ -1990,6 +2006,7 @@
           showRowError(hourStr, err.detail || 'Eroare salvare');
         }
       } catch (e) {
+        if (e.name === 'AbortError') return; // cancelled by a newer save
         showRowError(hourStr, 'Eroare rețea');
       }
     }

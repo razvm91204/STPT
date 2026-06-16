@@ -364,9 +364,22 @@ async def remove_station_from_structure(line_id: str, direction: str, station_na
 
 import json as _json
 
+_VALID_DIRECTIONS = {"dus", "intors"}
+_VALID_DAY_TYPES = {"scoala", "vacanta", "zi_libera"}
+
 
 class ScheduleUpdate(BaseModel):
     schedule: dict  # {hour_str: [minutes]}
+
+
+def _check_direction(direction: str) -> None:
+    if direction not in _VALID_DIRECTIONS:
+        raise HTTPException(status_code=422, detail=f"Invalid direction '{direction}'")
+
+
+def _check_day_type(day_type: str) -> None:
+    if day_type not in _VALID_DAY_TYPES:
+        raise HTTPException(status_code=422, detail=f"Invalid day_type '{day_type}'")
 
 
 def validate_schedule(schedule: dict) -> None:
@@ -392,6 +405,8 @@ def validate_schedule(schedule: dict) -> None:
 @router.get("/schedules/{line_id}/{direction}/{station_name}/{day_type}")
 async def get_schedule(line_id: str, direction: str, station_name: str, day_type: str):
     """Return the schedule for a given (line, direction, station, day_type)."""
+    _check_direction(direction)
+    _check_day_type(day_type)
     db = get_db()
     try:
         row = db.execute(
@@ -408,14 +423,18 @@ async def get_schedule(line_id: str, direction: str, station_name: str, day_type
 @router.put("/schedules/{line_id}/{direction}/{station_name}/{day_type}")
 async def put_schedule(line_id: str, direction: str, station_name: str, day_type: str, body: ScheduleUpdate):
     """Upsert the schedule for a given (line, direction, station, day_type)."""
+    _check_direction(direction)
+    _check_day_type(day_type)
     validate_schedule(body.schedule)
+    # Strip empty hour lists to keep representation consistent with empty-schedule GET
+    clean = {k: v for k, v in body.schedule.items() if v}
     db = get_db()
     try:
         existing = db.execute(
             "SELECT 1 FROM schedules WHERE line_id=? AND direction=? AND station_name=? AND day_type=?",
             (line_id, direction, station_name, day_type),
         ).fetchone()
-        schedule_json = _json.dumps(body.schedule, ensure_ascii=False)
+        schedule_json = _json.dumps(clean, ensure_ascii=False)
         if existing:
             db.execute(
                 "UPDATE schedules SET schedule_json=? WHERE line_id=? AND direction=? AND station_name=? AND day_type=?",
