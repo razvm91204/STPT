@@ -977,9 +977,6 @@
         <a class="nav-link" data-section="orare" href="#">
           <span class="nav-icon">🕐</span> Orare
         </a>
-        <a class="nav-link" data-section="publish" href="#">
-          <span class="nav-icon">🚀</span> Publish
-        </a>
       </nav>
 
       <div class="sidebar-footer">
@@ -1120,38 +1117,6 @@
           </div>
         </section>
 
-        <section id="section-publish">
-          <div class="section-header">
-            <h3>Publică modificările</h3>
-          </div>
-
-          <!-- Info card -->
-          <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:24px;">
-            <p style="font-size:0.9375rem;color:var(--text);line-height:1.6;">
-              Generează <strong>network_data.js</strong> și <strong>stations_coords.js</strong> din baza de date
-              și le înlocuiește pe cele servite public.
-              Schimbările devin vizibile imediat pentru utilizatori.
-            </p>
-            <p style="margin-top:14px;font-size:0.875rem;color:var(--muted);">
-              <strong>Ultima publicare:</strong>
-              <span id="publish-last-ts" style="margin-left:6px;">Se încarcă…</span>
-            </p>
-          </div>
-
-          <!-- Banner area (hidden until action) -->
-          <div id="publish-banner" style="display:none;padding:14px 20px;border-radius:10px;font-size:0.9rem;font-weight:500;margin-bottom:20px;"></div>
-
-          <!-- Publish button -->
-          <button id="publish-btn" onclick="doPublish()"
-            style="display:flex;align-items:center;justify-content:center;gap:10px;
-                   width:100%;padding:16px 24px;
-                   background:var(--purple);color:var(--white);
-                   border:none;border-radius:12px;
-                   font-family:inherit;font-size:1.0625rem;font-weight:700;
-                   cursor:pointer;transition:background 0.15s,transform 0.1s;">
-            🚀 Publică acum
-          </button>
-        </section>
       </div>
     </div>
   </div>
@@ -1415,10 +1380,9 @@
 
     // ── Navigation ──────────────────────────────────────────────
     const sectionTitles = {
-      linii:   'Linii',
-      statii:  'Stații',
-      orare:   'Orare',
-      publish: 'Publish',
+      linii:  'Linii',
+      statii: 'Stații',
+      orare:  'Orare',
     };
 
     function navigateTo(key) {
@@ -1468,7 +1432,14 @@
       errEl.textContent = '';
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Se încarcă...</td></tr>';
 
-      const data = await apiFetchJSON('/api/admin/lines');
+      let data;
+      try {
+        data = await apiFetchJSON('/api/admin/lines');
+      } catch (e) {
+        errEl.textContent = 'Eroare la conectarea la server.';
+        tbody.innerHTML = '';
+        return;
+      }
       if (!data) return;
       linesData = data;
 
