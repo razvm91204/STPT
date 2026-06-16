@@ -11,7 +11,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from server.db import get_db
 
@@ -51,26 +51,26 @@ async def me(username: str = Depends(get_current_user)):
 # ── Pydantic models ─────────────────────────────────────────────────────────
 
 class LineCreate(BaseModel):
-    id: str
-    type: str
+    id: str = Field(min_length=1, max_length=16)
+    type: str = Field(pattern="^(tram|bus|met)$")
     active: int = 1
 
 
 class LineUpdate(BaseModel):
-    type: str
+    type: str = Field(pattern="^(tram|bus|met)$")
     active: int
 
 
 class StationCreate(BaseModel):
-    name: str
-    lat: float
-    lon: float
+    name: str = Field(min_length=1, max_length=128)
+    lat: float = Field(ge=-90.0, le=90.0)
+    lon: float = Field(ge=-180.0, le=180.0)
 
 
 class StationUpdate(BaseModel):
-    name: Optional[str] = None
-    lat: float
-    lon: float
+    name: Optional[str] = Field(default=None, min_length=1, max_length=128)
+    lat: float = Field(ge=-90.0, le=90.0)
+    lon: float = Field(ge=-180.0, le=180.0)
 
 
 class StructureDirection(BaseModel):
@@ -227,6 +227,8 @@ async def delete_station(station_name: str):
         row = db.execute("SELECT name FROM stations WHERE name=?", (station_name,)).fetchone()
         if not row:
             raise HTTPException(status_code=404, detail=f"Station '{station_name}' not found")
+        db.execute("DELETE FROM line_stations WHERE station_name=?", (station_name,))
+        db.execute("DELETE FROM schedules WHERE station_name=?", (station_name,))
         db.execute("DELETE FROM stations WHERE name=?", (station_name,))
         db.commit()
     finally:
@@ -269,6 +271,9 @@ async def replace_line_structure(line_id: str, body: StructureDirection):
         if not row:
             raise HTTPException(status_code=404, detail=f"Line '{line_id}' not found")
 
+        for sname in body.stations:
+            if not db.execute("SELECT name FROM stations WHERE name=?", (sname,)).fetchone():
+                raise HTTPException(status_code=422, detail=f"Station '{sname}' not found in stations table")
         db.execute(
             "DELETE FROM line_stations WHERE line_id=? AND direction=?",
             (line_id, body.direction),
@@ -292,6 +297,9 @@ async def add_station_to_structure(line_id: str, direction: str, body: StationAd
         row = db.execute("SELECT id FROM lines WHERE id=?", (line_id,)).fetchone()
         if not row:
             raise HTTPException(status_code=404, detail=f"Line '{line_id}' not found")
+
+        if not db.execute("SELECT name FROM stations WHERE name=?", (body.station_name,)).fetchone():
+            raise HTTPException(status_code=422, detail=f"Station '{body.station_name}' not found in stations table")
 
         existing = db.execute(
             "SELECT position FROM line_stations WHERE line_id=? AND direction=? AND station_name=?",

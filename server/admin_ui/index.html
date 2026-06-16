@@ -1444,7 +1444,7 @@
     }
 
     function escAttr(str) {
-      return String(str).replace(/'/g, "\\'");
+      return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
     }
 
     // ── Bootstrap ───────────────────────────────────────────────
