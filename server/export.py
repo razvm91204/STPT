@@ -23,53 +23,37 @@ def generate_network_data_js(db_path: str = None) -> str:
         lines = conn.execute(
             "SELECT id FROM lines WHERE active = 1 ORDER BY id"
         ).fetchall()
+        active_ids = {row["id"] for row in lines}
+
+        # Bulk fetch all line_stations and schedules (avoids N+1 queries)
+        all_ls = conn.execute(
+            "SELECT line_id, direction, station_name, position FROM line_stations ORDER BY line_id, direction, position"
+        ).fetchall()
+        ls_index = {}
+        for r in all_ls:
+            if r["line_id"] not in active_ids:
+                continue
+            key = (r["line_id"], r["direction"])
+            ls_index.setdefault(key, []).append(r["station_name"])
+
+        all_scheds = conn.execute(
+            "SELECT line_id, direction, station_name, day_type, schedule_json FROM schedules"
+        ).fetchall()
+        sched_index = {}
+        for r in all_scheds:
+            key = (r["line_id"], r["direction"], r["station_name"])
+            sched_index.setdefault(key, {})[r["day_type"]] = json.loads(r["schedule_json"])
 
         network = {}
-
         for line_row in lines:
             line_id = line_row["id"]
             network[line_id] = {}
-
-            # Fetch directions for this line
-            directions = conn.execute(
-                """SELECT DISTINCT direction FROM line_stations
-                   WHERE line_id = ? ORDER BY direction""",
-                (line_id,)
-            ).fetchall()
-
-            for dir_row in directions:
-                direction = dir_row["direction"]
-
-                # Fetch ordered stations for this line+direction
-                station_rows = conn.execute(
-                    """SELECT station_name FROM line_stations
-                       WHERE line_id = ? AND direction = ?
-                       ORDER BY position""",
-                    (line_id, direction)
-                ).fetchall()
-
+            directions = {k[1] for k in ls_index if k[0] == line_id}
+            for direction in sorted(directions):
                 stations_list = []
-                for st_row in station_rows:
-                    station_name = st_row["station_name"]
-
-                    # Fetch schedules for this station
-                    sched_rows = conn.execute(
-                        """SELECT day_type, schedule_json FROM schedules
-                           WHERE line_id = ? AND direction = ? AND station_name = ?""",
-                        (line_id, direction, station_name)
-                    ).fetchall()
-
-                    schedule = {}
-                    for sched_row in sched_rows:
-                        schedule[sched_row["day_type"]] = json.loads(
-                            sched_row["schedule_json"]
-                        )
-
-                    stations_list.append({
-                        "name": station_name,
-                        "schedule": schedule
-                    })
-
+                for station_name in ls_index.get((line_id, direction), []):
+                    schedule = sched_index.get((line_id, direction, station_name), {})
+                    stations_list.append({"name": station_name, "schedule": schedule})
                 network[line_id][direction] = {"stations": stations_list}
 
         js_content = (

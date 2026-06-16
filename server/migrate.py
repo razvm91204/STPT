@@ -94,7 +94,8 @@ def import_network(conn, network_path: str) -> None:
 
 def import_stations_coords(conn, coords_path: str) -> None:
     print(f"Reading {coords_path} ...")
-    content = open(coords_path, encoding="utf-8").read()
+    with open(coords_path, encoding="utf-8") as f:
+        content = f.read()
     match = re.search(r"const STATIONS_COORDS\s*=\s*(\{[\s\S]*?\});", content)
     if not match:
         print("ERROR: Could not parse STATIONS_COORDS from stations_coords.js", file=sys.stderr)
