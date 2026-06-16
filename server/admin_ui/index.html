@@ -824,6 +824,11 @@
       justify-content: flex-end;
       margin-top: 16px;
     }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
   </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -1077,13 +1082,35 @@
 
         <section id="section-publish">
           <div class="section-header">
-            <h3>Publish</h3>
-            <p class="subtitle">Publică modificările pentru aplicația publică.</p>
+            <h3>Publică modificările</h3>
           </div>
-          <div class="placeholder-card">
-            <div class="placeholder-icon">🚀</div>
-            <p>Publică modificările — în curând.</p>
+
+          <!-- Info card -->
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:24px;">
+            <p style="font-size:0.9375rem;color:var(--text);line-height:1.6;">
+              Generează <strong>network_data.js</strong> și <strong>stations_coords.js</strong> din baza de date
+              și le înlocuiește pe cele servite public.
+              Schimbările devin vizibile imediat pentru utilizatori.
+            </p>
+            <p style="margin-top:14px;font-size:0.875rem;color:var(--muted);">
+              <strong>Ultima publicare:</strong>
+              <span id="publish-last-ts" style="margin-left:6px;">Se încarcă…</span>
+            </p>
           </div>
+
+          <!-- Banner area (hidden until action) -->
+          <div id="publish-banner" style="display:none;padding:14px 20px;border-radius:10px;font-size:0.9rem;font-weight:500;margin-bottom:20px;"></div>
+
+          <!-- Publish button -->
+          <button id="publish-btn" onclick="doPublish()"
+            style="display:flex;align-items:center;justify-content:center;gap:10px;
+                   width:100%;padding:16px 24px;
+                   background:var(--purple);color:var(--white);
+                   border:none;border-radius:12px;
+                   font-family:inherit;font-size:1.0625rem;font-weight:700;
+                   cursor:pointer;transition:background 0.15s,transform 0.1s;">
+            🚀 Publică acum
+          </button>
         </section>
       </div>
     </div>
@@ -1189,6 +1216,7 @@
       if (key === 'linii') loadLines();
       if (key === 'statii') loadStations();
       if (key === 'orare') loadOrarSection();
+      if (key === 'publish') loadPublishStatus();
     }
 
     document.querySelectorAll('.nav-link').forEach(link => {
@@ -2040,6 +2068,77 @@
       input.parentElement.style.position = 'relative';
       input.parentElement.appendChild(tip);
       setTimeout(() => tip.remove(), 2000);
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  PUBLISH
+    // ════════════════════════════════════════════════════════════
+
+    function formatPublishTs(isoStr) {
+      if (!isoStr) return 'Niciodată';
+      try {
+        const d = new Date(isoStr);
+        return d.toLocaleString('ro-RO', {
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+        });
+      } catch {
+        return isoStr;
+      }
+    }
+
+    async function loadPublishStatus() {
+      const tsEl = document.getElementById('publish-last-ts');
+      if (!tsEl) return;
+      tsEl.textContent = 'Se încarcă…';
+      const data = await apiFetchJSON('/api/admin/publish/status');
+      if (!data) { tsEl.textContent = '—'; return; }
+      tsEl.textContent = formatPublishTs(data.last_published);
+    }
+
+    async function doPublish() {
+      const btn = document.getElementById('publish-btn');
+      const banner = document.getElementById('publish-banner');
+      const tsEl = document.getElementById('publish-last-ts');
+
+      // Disable & show spinner text
+      btn.disabled = true;
+      btn.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;">⏳</span> Se publică…';
+
+      // Clear previous banner
+      banner.style.display = 'none';
+      banner.textContent = '';
+
+      try {
+        const res = await apiFetch('/api/admin/publish', { method: 'POST' });
+        if (!res) { btn.disabled = false; btn.innerHTML = '🚀 Publică acum'; return; }
+
+        if (res.ok) {
+          const data = await res.json();
+          banner.style.background = '#dcfce7';
+          banner.style.color = '#15803d';
+          banner.style.border = '1px solid #86efac';
+          banner.textContent = '✅ Publicat cu succes! network_data.js și stations_coords.js au fost actualizate.';
+          banner.style.display = 'block';
+          if (tsEl) tsEl.textContent = formatPublishTs(data.published_at);
+        } else {
+          const err = await res.json().catch(() => ({}));
+          banner.style.background = '#fee2e2';
+          banner.style.color = '#dc2626';
+          banner.style.border = '1px solid #fca5a5';
+          banner.textContent = '❌ Eroare: ' + (err.detail || 'Publicarea a eșuat.');
+          banner.style.display = 'block';
+        }
+      } catch (e) {
+        banner.style.background = '#fee2e2';
+        banner.style.color = '#dc2626';
+        banner.style.border = '1px solid #fca5a5';
+        banner.textContent = '❌ Eroare de rețea. Încearcă din nou.';
+        banner.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '🚀 Publică acum';
+      }
     }
 
     // ── Utilities ─────────────────────────────────────────────────

@@ -7,6 +7,10 @@ Usage:
   python server/migrate.py --create-admin   # also prompt for admin credentials
 """
 
+# To set up the first admin user after deploying to fly.io:
+#   fly ssh console -a stpt-admin
+#   python server/migrate.py --create-admin
+
 import argparse
 import getpass
 import json

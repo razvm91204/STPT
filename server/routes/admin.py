@@ -6,6 +6,7 @@ All routes are protected with JWT authentication and mounted under /api/admin.
 """
 
 import os
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -449,3 +450,64 @@ async def put_schedule(line_id: str, direction: str, station_name: str, day_type
         return {"ok": True}
     finally:
         db.close()
+
+
+# ── Publish ──────────────────────────────────────────────────────────────────
+
+# Compute repo root as two levels up from this file (server/routes/admin.py)
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+@router.get("/publish/status")
+async def publish_status():
+    """Return the timestamp of the last successful publish."""
+    db = get_db()
+    try:
+        row = db.execute("SELECT value FROM meta WHERE key='last_published'").fetchone()
+        return {"last_published": row["value"] if row else None}
+    finally:
+        db.close()
+
+
+@router.post("/publish")
+async def publish():
+    """Generate network_data.js and stations_coords.js from the DB and write them to the repo root."""
+    from server.db import DB_PATH
+    from server.export import generate_network_data_js, generate_stations_coords_js
+
+    try:
+        network_js = generate_network_data_js(DB_PATH)
+        coords_js = generate_stations_coords_js(DB_PATH)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Export failed: {exc}")
+
+    network_path = os.path.join(_REPO_ROOT, "network_data.js")
+    coords_path = os.path.join(_REPO_ROOT, "stations_coords.js")
+
+    try:
+        with open(network_path, "w", encoding="utf-8") as f:
+            f.write(network_js)
+        with open(coords_path, "w", encoding="utf-8") as f:
+            f.write(coords_js)
+    except OSError as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to write files: {exc}")
+
+    published_at = datetime.now(timezone.utc).isoformat()
+
+    db = get_db()
+    try:
+        db.execute(
+            "INSERT INTO meta (key, value) VALUES ('last_published', ?) "
+            "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+            (published_at,),
+        )
+        db.commit()
+    finally:
+        db.close()
+
+    return {
+        "ok": True,
+        "published_at": published_at,
+        "network_size": len(network_js.encode("utf-8")),
+        "coords_size": len(coords_js.encode("utf-8")),
+    }

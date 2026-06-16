@@ -6,7 +6,9 @@ Start with:
   uvicorn server.main:app --port 8080
 """
 
+import logging
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,34 +18,43 @@ from starlette.staticfiles import StaticFiles
 from server.db import DB_PATH, init_db
 from server.routes import auth, admin
 
+logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Lifespan — replaces deprecated @app.on_event("startup")
+# ---------------------------------------------------------------------------
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    db_dir = os.path.dirname(DB_PATH)
+    if db_dir and not os.path.exists(db_dir):
+        os.makedirs(db_dir, exist_ok=True)
+    init_db()
+    if DB_PATH and os.environ.get("SECRET_KEY", "change-me-in-production") == "change-me-in-production":
+        logger.warning(
+            "⚠️  SECRET_KEY is using the default insecure value. "
+            "Set the SECRET_KEY environment variable before deployment."
+        )
+    yield
+
 # ---------------------------------------------------------------------------
 # App instance
 # ---------------------------------------------------------------------------
 
-app = FastAPI(title="STPT Admin API", version="1.0.0")
+app = FastAPI(title="STPT Admin API", version="1.0.0", lifespan=lifespan)
 
 # ---------------------------------------------------------------------------
-# CORS — open for now (internal tool)
+# CORS — open for now (internal tool).
+# allow_credentials is intentionally omitted: Bearer tokens are sent in
+# headers and do not require credentialed CORS requests.
 # ---------------------------------------------------------------------------
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# ---------------------------------------------------------------------------
-# Startup
-# ---------------------------------------------------------------------------
-
-@app.on_event("startup")
-async def on_startup():
-    db_dir = os.path.dirname(DB_PATH)
-    if db_dir and not os.path.exists(db_dir):
-        os.makedirs(db_dir, exist_ok=True)
-    init_db()
 
 
 # ---------------------------------------------------------------------------
