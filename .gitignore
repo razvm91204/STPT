@@ -1,0 +1,7 @@
+*.db
+data/
+__pycache__/
+.venv/
+*.pyc
+.env
+stpt_orare/
