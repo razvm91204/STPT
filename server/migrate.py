@@ -124,9 +124,9 @@ def import_stations_coords(conn, coords_path: str) -> None:
 
 def create_admin(conn) -> None:
     try:
-        from passlib.hash import bcrypt
+        import bcrypt as _bcrypt
     except ImportError:
-        print("ERROR: passlib not installed. Run: pip install passlib[bcrypt]", file=sys.stderr)
+        print("ERROR: bcrypt not installed. Run: pip install bcrypt", file=sys.stderr)
         sys.exit(1)
 
     print("\n--- Create Admin User ---")
@@ -140,7 +140,7 @@ def create_admin(conn) -> None:
         print("Password cannot be empty.", file=sys.stderr)
         sys.exit(1)
 
-    password_hash = bcrypt.hash(password)
+    password_hash = _bcrypt.hashpw(password.encode(), _bcrypt.gensalt()).decode()
     conn.execute(
         """INSERT INTO users (username, password_hash) VALUES (?, ?)
            ON CONFLICT(username) DO UPDATE SET password_hash=excluded.password_hash""",
