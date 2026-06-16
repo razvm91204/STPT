@@ -534,6 +534,214 @@
       margin-bottom: 12px;
     }
 
+    /* ── Schedule editor ───────────────────────────────────────── */
+    .schedule-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+
+    .schedule-selector .sel-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 150px;
+    }
+
+    .schedule-selector .sel-field label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .schedule-selector select {
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .schedule-selector select:focus { border-color: var(--purple); }
+    .schedule-selector select:disabled { opacity: 0.45; cursor: default; }
+
+    .schedule-grid-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .schedule-grid-empty {
+      padding: 48px 32px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .schedule-grid-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .schedule-grid-table th {
+      background: #f8f7fd;
+      padding: 10px 16px;
+      text-align: left;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .schedule-grid-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .schedule-grid-table tr:last-child td { border-bottom: none; }
+
+    .hour-label {
+      font-weight: 700;
+      color: var(--muted);
+      font-size: 0.95rem;
+      min-width: 40px;
+      width: 48px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .chips-cell {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .minute-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      background: #ede9fd;
+      color: #4338b0;
+      border: 1px solid #8b7ee8;
+      border-radius: 20px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.12s, transform 0.1s;
+      user-select: none;
+    }
+
+    .minute-chip:hover {
+      background: #ddd6fe;
+      transform: scale(1.06);
+    }
+
+    .minute-chip .chip-remove {
+      font-size: 0.7rem;
+      opacity: 0.55;
+      line-height: 1;
+      padding-left: 1px;
+    }
+
+    .chip-empty {
+      color: #c4b8f5;
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    .row-add-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-left: 4px;
+    }
+
+    .row-add-input {
+      width: 44px;
+      padding: 4px 6px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      text-align: center;
+      outline: none;
+    }
+
+    .row-add-input:focus { border-color: var(--purple); }
+
+    .row-add-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.12s;
+      flex-shrink: 0;
+    }
+
+    .row-add-btn:hover { background: var(--purple-dk); }
+
+    .row-status-cell {
+      width: 90px;
+      font-size: 0.8rem;
+      text-align: right;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .row-status-saved {
+      color: #16a34a;
+      font-weight: 600;
+    }
+
+    .row-status-saving {
+      color: var(--purple);
+    }
+
+    .row-status-error {
+      color: var(--error);
+      font-weight: 600;
+    }
+
+    .tooltip-dup {
+      position: absolute;
+      background: #1a1a2e;
+      color: #fff;
+      font-size: 0.78rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 9999;
+      margin-top: 4px;
+    }
+
     /* Drawer / route editor */
     .route-editor {
       background: var(--white);
@@ -824,13 +1032,46 @@
         </section>
 
         <section id="section-orare">
-          <div class="section-header">
+          <div class="section-toolbar">
             <h3>Orare</h3>
-            <p class="subtitle">Editare orare pentru fiecare linie și stație.</p>
           </div>
-          <div class="placeholder-card">
-            <div class="placeholder-icon">🕐</div>
-            <p>Editor orare — în curând.</p>
+
+          <!-- Selector bar -->
+          <div class="schedule-selector">
+            <div class="sel-field">
+              <label>Linie</label>
+              <select id="sch-line" onchange="onSchLineChange()">
+                <option value="">— selectați —</option>
+              </select>
+            </div>
+            <div class="sel-field">
+              <label>Direcție</label>
+              <select id="sch-dir" onchange="onSchDirChange()" disabled>
+                <option value="dus">Dus</option>
+                <option value="intors">Întors</option>
+              </select>
+            </div>
+            <div class="sel-field">
+              <label>Stație</label>
+              <select id="sch-station" onchange="onSchStationChange()" disabled>
+                <option value="">— selectați —</option>
+              </select>
+            </div>
+            <div class="sel-field">
+              <label>Tip zi</label>
+              <select id="sch-daytype" onchange="onSchDayTypeChange()" disabled>
+                <option value="scoala">Școală</option>
+                <option value="vacanta">Vacanță</option>
+                <option value="zi_libera">Zi liberă</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="orare-error" class="inline-error" style="margin-bottom:12px;"></div>
+
+          <!-- Schedule grid -->
+          <div class="schedule-grid-wrap" id="schedule-grid-wrap">
+            <div class="schedule-grid-empty">Selectați o linie, direcție, stație și tip de zi pentru a edita orarul.</div>
           </div>
         </section>
 
@@ -947,6 +1188,7 @@
 
       if (key === 'linii') loadLines();
       if (key === 'statii') loadStations();
+      if (key === 'orare') loadOrarSection();
     }
 
     document.querySelectorAll('.nav-link').forEach(link => {
@@ -1431,6 +1673,356 @@
       }
       hideStationForm();
       loadStations();
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  ORARE  (Schedule editor)
+    // ════════════════════════════════════════════════════════════
+
+    // State
+    let schLineId    = '';
+    let schDir       = 'dus';
+    let schStation   = '';
+    let schDayType   = 'scoala';
+    let schSchedule  = {}; // {hour_str: [minutes]}
+
+    // Called when the Orare section is activated
+    async function loadOrarSection() {
+      const errEl = document.getElementById('orare-error');
+      errEl.textContent = '';
+
+      // Populate lines dropdown
+      const linesSel = document.getElementById('sch-line');
+      linesSel.innerHTML = '<option value="">— selectați —</option>';
+      document.getElementById('sch-dir').disabled = true;
+      document.getElementById('sch-station').disabled = true;
+      document.getElementById('sch-daytype').disabled = true;
+
+      const data = await apiFetchJSON('/api/admin/lines');
+      if (!data) { errEl.textContent = 'Eroare la încărcarea liniilor.'; return; }
+
+      data.forEach(l => {
+        const opt = document.createElement('option');
+        opt.value = l.id;
+        opt.textContent = l.id;
+        linesSel.appendChild(opt);
+      });
+
+      // If we had a previously selected line, restore state
+      if (schLineId) {
+        linesSel.value = schLineId;
+        await loadSchStructure();
+      }
+    }
+
+    async function onSchLineChange() {
+      schLineId = document.getElementById('sch-line').value;
+      schStation = '';
+      document.getElementById('sch-station').innerHTML = '<option value="">— selectați —</option>';
+      document.getElementById('sch-station').disabled = true;
+      document.getElementById('sch-daytype').disabled = true;
+      document.getElementById('orare-error').textContent = '';
+      clearScheduleGrid();
+
+      if (!schLineId) {
+        document.getElementById('sch-dir').disabled = true;
+        return;
+      }
+      document.getElementById('sch-dir').disabled = false;
+      await loadSchStructure();
+    }
+
+    async function onSchDirChange() {
+      schDir = document.getElementById('sch-dir').value;
+      schStation = '';
+      clearScheduleGrid();
+      await loadSchStructure();
+    }
+
+    async function loadSchStructure() {
+      if (!schLineId) return;
+      const errEl = document.getElementById('orare-error');
+      errEl.textContent = '';
+
+      const struct = await apiFetchJSON(`/api/admin/lines/${encodeURIComponent(schLineId)}/structure`);
+      if (!struct) { errEl.textContent = 'Eroare la încărcarea structurii liniei.'; return; }
+
+      const stations = (struct[schDir] || []);
+      const stationSel = document.getElementById('sch-station');
+      stationSel.innerHTML = '<option value="">— selectați —</option>';
+      stations.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        stationSel.appendChild(opt);
+      });
+
+      if (stations.length > 0) {
+        stationSel.disabled = false;
+      } else {
+        stationSel.disabled = true;
+      }
+
+      // If schStation is still in list, restore
+      if (schStation && stations.includes(schStation)) {
+        stationSel.value = schStation;
+        document.getElementById('sch-daytype').disabled = false;
+        await loadSchSchedule();
+      } else {
+        schStation = '';
+        document.getElementById('sch-daytype').disabled = true;
+        clearScheduleGrid();
+      }
+    }
+
+    async function onSchStationChange() {
+      schStation = document.getElementById('sch-station').value;
+      if (!schStation) {
+        document.getElementById('sch-daytype').disabled = true;
+        clearScheduleGrid();
+        return;
+      }
+      document.getElementById('sch-daytype').disabled = false;
+      await loadSchSchedule();
+    }
+
+    async function onSchDayTypeChange() {
+      schDayType = document.getElementById('sch-daytype').value;
+      await loadSchSchedule();
+    }
+
+    async function loadSchSchedule() {
+      if (!schLineId || !schStation) return;
+      schDayType = document.getElementById('sch-daytype').value;
+
+      const errEl = document.getElementById('orare-error');
+      errEl.textContent = '';
+
+      const wrap = document.getElementById('schedule-grid-wrap');
+      wrap.innerHTML = '<div class="schedule-grid-empty" style="padding:24px 32px;">Se încarcă...</div>';
+
+      const url = `/api/admin/schedules/${encodeURIComponent(schLineId)}/${encodeURIComponent(schDir)}/${encodeURIComponent(schStation)}/${encodeURIComponent(schDayType)}`;
+      const data = await apiFetchJSON(url);
+      if (!data) {
+        errEl.textContent = 'Eroare la încărcarea orarului.';
+        wrap.innerHTML = '<div class="schedule-grid-empty">Eroare la încărcare.</div>';
+        return;
+      }
+
+      schSchedule = data.schedule || {};
+      renderScheduleGrid();
+    }
+
+    function clearScheduleGrid() {
+      schSchedule = {};
+      const wrap = document.getElementById('schedule-grid-wrap');
+      wrap.innerHTML = '<div class="schedule-grid-empty">Selectați o linie, direcție, stație și tip de zi pentru a edita orarul.</div>';
+    }
+
+    function renderScheduleGrid() {
+      const wrap = document.getElementById('schedule-grid-wrap');
+
+      const table = document.createElement('table');
+      table.className = 'schedule-grid-table';
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th style="width:48px;">Oră</th>
+            <th>Minute</th>
+            <th style="width:90px;text-align:right;">Status</th>
+          </tr>
+        </thead>
+      `;
+      const tbody = document.createElement('tbody');
+
+      for (let h = 4; h <= 23; h++) {
+        const hourStr = String(h);
+        const minutes = [...(schSchedule[hourStr] || [])].sort((a, b) => a - b);
+        tbody.appendChild(buildHourRow(hourStr, minutes));
+      }
+
+      table.appendChild(tbody);
+      wrap.innerHTML = '';
+      wrap.appendChild(table);
+    }
+
+    function buildHourRow(hourStr, minutes) {
+      const tr = document.createElement('tr');
+      tr.id = `hour-row-${hourStr}`;
+
+      // Hour label cell
+      const tdHour = document.createElement('td');
+      tdHour.className = 'hour-label';
+      tdHour.textContent = hourStr.padStart(2, '0');
+      tr.appendChild(tdHour);
+
+      // Chips + add input cell
+      const tdChips = document.createElement('td');
+      const chipsWrap = document.createElement('div');
+      chipsWrap.className = 'chips-cell';
+      chipsWrap.id = `chips-${hourStr}`;
+      renderChips(chipsWrap, hourStr, minutes);
+      tdChips.appendChild(chipsWrap);
+      tr.appendChild(tdChips);
+
+      // Status cell
+      const tdStatus = document.createElement('td');
+      tdStatus.className = 'row-status-cell';
+      tdStatus.id = `row-status-${hourStr}`;
+      tr.appendChild(tdStatus);
+
+      return tr;
+    }
+
+    function renderChips(container, hourStr, minutes) {
+      container.innerHTML = '';
+
+      if (minutes.length === 0) {
+        const dash = document.createElement('span');
+        dash.className = 'chip-empty';
+        dash.textContent = '—';
+        container.appendChild(dash);
+      } else {
+        minutes.forEach(m => {
+          const chip = document.createElement('span');
+          chip.className = 'minute-chip';
+          chip.title = `Șterge minutul ${m}`;
+          chip.innerHTML = `${String(m).padStart(2,'0')}<span class="chip-remove">✕</span>`;
+          chip.addEventListener('click', () => removeMinute(hourStr, m));
+          container.appendChild(chip);
+        });
+      }
+
+      // Add row
+      const addWrap = document.createElement('div');
+      addWrap.className = 'row-add-wrap';
+      addWrap.style.position = 'relative';
+
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = '0';
+      input.max = '59';
+      input.className = 'row-add-input';
+      input.placeholder = '00';
+      input.id = `add-input-${hourStr}`;
+
+      const btn = document.createElement('button');
+      btn.className = 'row-add-btn';
+      btn.title = 'Adaugă minut';
+      btn.textContent = '+';
+      btn.addEventListener('click', () => addMinute(hourStr));
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); addMinute(hourStr); }
+      });
+
+      addWrap.appendChild(input);
+      addWrap.appendChild(btn);
+      container.appendChild(addWrap);
+    }
+
+    async function addMinute(hourStr) {
+      const input = document.getElementById(`add-input-${hourStr}`);
+      const val = input.value.trim();
+      if (val === '') return;
+      const m = parseInt(val, 10);
+      if (isNaN(m) || m < 0 || m > 59) {
+        showRowError(hourStr, 'Valoare invalidă (0-59)');
+        return;
+      }
+
+      const current = [...(schSchedule[hourStr] || [])];
+      if (current.includes(m)) {
+        // Show "deja există" tooltip
+        showDupTooltip(hourStr, m);
+        input.value = '';
+        return;
+      }
+
+      current.push(m);
+      current.sort((a, b) => a - b);
+      schSchedule[hourStr] = current;
+
+      // Re-render chips for this row
+      const chipsWrap = document.getElementById(`chips-${hourStr}`);
+      renderChips(chipsWrap, hourStr, current);
+      input.value = '';
+
+      await saveScheduleRow(hourStr);
+    }
+
+    async function removeMinute(hourStr, minute) {
+      const current = [...(schSchedule[hourStr] || [])].filter(m => m !== minute);
+      schSchedule[hourStr] = current;
+
+      const chipsWrap = document.getElementById(`chips-${hourStr}`);
+      renderChips(chipsWrap, hourStr, current.sort((a, b) => a - b));
+
+      await saveScheduleRow(hourStr);
+    }
+
+    async function saveScheduleRow(hourStr) {
+      const statusEl = document.getElementById(`row-status-${hourStr}`);
+      if (!statusEl) return;
+      statusEl.className = 'row-status-cell row-status-saving';
+      statusEl.textContent = '…';
+
+      const url = `/api/admin/schedules/${encodeURIComponent(schLineId)}/${encodeURIComponent(schDir)}/${encodeURIComponent(schStation)}/${encodeURIComponent(schDayType)}`;
+
+      try {
+        const res = await apiFetch(url, {
+          method: 'PUT',
+          body: JSON.stringify({ schedule: schSchedule }),
+        });
+        if (!res) { statusEl.textContent = ''; return; }
+
+        if (res.ok) {
+          statusEl.className = 'row-status-cell row-status-saved';
+          statusEl.textContent = 'Salvat';
+          setTimeout(() => {
+            if (statusEl.textContent === 'Salvat') {
+              statusEl.className = 'row-status-cell';
+              statusEl.textContent = '';
+            }
+          }, 2000);
+        } else {
+          const err = await res.json().catch(() => ({}));
+          showRowError(hourStr, err.detail || 'Eroare salvare');
+        }
+      } catch (e) {
+        showRowError(hourStr, 'Eroare rețea');
+      }
+    }
+
+    function showRowError(hourStr, msg) {
+      const statusEl = document.getElementById(`row-status-${hourStr}`);
+      if (!statusEl) return;
+      statusEl.className = 'row-status-cell row-status-error';
+      statusEl.textContent = msg;
+      setTimeout(() => {
+        if (statusEl.classList.contains('row-status-error')) {
+          statusEl.className = 'row-status-cell';
+          statusEl.textContent = '';
+        }
+      }, 3500);
+    }
+
+    function showDupTooltip(hourStr, minute) {
+      const input = document.getElementById(`add-input-${hourStr}`);
+      if (!input) return;
+      const existing = input.parentElement.querySelector('.tooltip-dup');
+      if (existing) existing.remove();
+
+      const tip = document.createElement('div');
+      tip.className = 'tooltip-dup';
+      tip.textContent = `${minute} deja există`;
+      // Position below the add row
+      tip.style.position = 'absolute';
+      tip.style.top = '100%';
+      tip.style.left = '0';
+      input.parentElement.style.position = 'relative';
+      input.parentElement.appendChild(tip);
+      setTimeout(() => tip.remove(), 2000);
     }
 
     // ── Utilities ─────────────────────────────────────────────────

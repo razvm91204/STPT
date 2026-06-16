@@ -358,3 +358,75 @@ async def remove_station_from_structure(line_id: str, direction: str, station_na
         db.commit()
     finally:
         db.close()
+
+
+# ── Schedules ────────────────────────────────────────────────────────────────
+
+import json as _json
+
+
+class ScheduleUpdate(BaseModel):
+    schedule: dict  # {hour_str: [minutes]}
+
+
+def validate_schedule(schedule: dict) -> None:
+    """Raise HTTPException(422) if schedule keys/values are invalid."""
+    for hour_str, minutes in schedule.items():
+        if not isinstance(hour_str, str):
+            raise HTTPException(status_code=422, detail=f"Hour key must be a string, got {type(hour_str).__name__}")
+        try:
+            hour_int = int(hour_str)
+        except (ValueError, TypeError):
+            raise HTTPException(status_code=422, detail=f"Hour key '{hour_str}' is not a valid integer string")
+        if hour_int < 4 or hour_int > 23:
+            raise HTTPException(status_code=422, detail=f"Hour '{hour_str}' is out of range 4-23")
+        if not isinstance(minutes, list):
+            raise HTTPException(status_code=422, detail=f"Minutes for hour '{hour_str}' must be a list")
+        for m in minutes:
+            if not isinstance(m, int) or isinstance(m, bool):
+                raise HTTPException(status_code=422, detail=f"Minute value '{m}' for hour '{hour_str}' must be an integer")
+            if m < 0 or m > 59:
+                raise HTTPException(status_code=422, detail=f"Minute value '{m}' for hour '{hour_str}' is out of range 0-59")
+
+
+@router.get("/schedules/{line_id}/{direction}/{station_name}/{day_type}")
+async def get_schedule(line_id: str, direction: str, station_name: str, day_type: str):
+    """Return the schedule for a given (line, direction, station, day_type)."""
+    db = get_db()
+    try:
+        row = db.execute(
+            "SELECT schedule_json FROM schedules WHERE line_id=? AND direction=? AND station_name=? AND day_type=?",
+            (line_id, direction, station_name, day_type),
+        ).fetchone()
+        if not row:
+            return {"schedule": {}}
+        return {"schedule": _json.loads(row["schedule_json"])}
+    finally:
+        db.close()
+
+
+@router.put("/schedules/{line_id}/{direction}/{station_name}/{day_type}")
+async def put_schedule(line_id: str, direction: str, station_name: str, day_type: str, body: ScheduleUpdate):
+    """Upsert the schedule for a given (line, direction, station, day_type)."""
+    validate_schedule(body.schedule)
+    db = get_db()
+    try:
+        existing = db.execute(
+            "SELECT 1 FROM schedules WHERE line_id=? AND direction=? AND station_name=? AND day_type=?",
+            (line_id, direction, station_name, day_type),
+        ).fetchone()
+        schedule_json = _json.dumps(body.schedule, ensure_ascii=False)
+        if existing:
+            db.execute(
+                "UPDATE schedules SET schedule_json=? WHERE line_id=? AND direction=? AND station_name=? AND day_type=?",
+                (schedule_json, line_id, direction, station_name, day_type),
+            )
+        else:
+            db.execute(
+                "INSERT INTO schedules (line_id, direction, station_name, day_type, schedule_json) VALUES (?, ?, ?, ?, ?)",
+                (line_id, direction, station_name, day_type, schedule_json),
+            )
+        db.commit()
+        return {"ok": True}
+    finally:
+        db.close()
