@@ -38,7 +38,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
 @router.post("/login")
 async def login(body: LoginRequest):
     """Authenticate a user and return a JWT access token."""
-    from passlib.hash import bcrypt
+    import bcrypt as _bcrypt
     from server.db import get_db
 
     conn = get_db()
@@ -50,7 +50,11 @@ async def login(body: LoginRequest):
     finally:
         conn.close()
 
-    if row is None or not bcrypt.verify(body.password, row["password_hash"]):
+    valid = (
+        row is not None
+        and _bcrypt.checkpw(body.password.encode(), row["password_hash"].encode())
+    )
+    if not valid:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",

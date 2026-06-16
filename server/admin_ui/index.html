@@ -1065,9 +1065,9 @@
             <div class="sel-field">
               <label>Tip zi</label>
               <select id="sch-daytype" onchange="onSchDayTypeChange()" disabled>
-                <option value="scoala">Școală</option>
-                <option value="vacanta">Vacanță</option>
-                <option value="zi_libera">Zi liberă</option>
+                <option value="school">Școală</option>
+                <option value="vacation">Vacanță</option>
+                <option value="holiday">Zi liberă</option>
               </select>
             </div>
           </div>
@@ -1711,7 +1711,7 @@
     let schLineId    = '';
     let schDir       = 'dus';
     let schStation   = '';
-    let schDayType   = 'scoala';
+    let schDayType   = 'school';
     let schSchedule  = {}; // {hour_str: [minutes]}
     let schSaveCtrl  = null; // AbortController for in-flight saves
 

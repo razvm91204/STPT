@@ -366,7 +366,7 @@ async def remove_station_from_structure(line_id: str, direction: str, station_na
 import json as _json
 
 _VALID_DIRECTIONS = {"dus", "intors"}
-_VALID_DAY_TYPES = {"scoala", "vacanta", "zi_libera"}
+_VALID_DAY_TYPES = {"school", "vacation", "holiday"}
 
 
 class ScheduleUpdate(BaseModel):
