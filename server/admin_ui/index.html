@@ -198,9 +198,11 @@
     }
 
     nav a .nav-icon {
-      font-size: 1.05rem;
       width: 20px;
-      text-align: center;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
     }
 
@@ -656,10 +658,11 @@
     }
 
     .minute-chip .chip-remove {
-      font-size: 0.7rem;
       opacity: 0.55;
       line-height: 1;
-      padding-left: 1px;
+      padding-left: 2px;
+      display: inline-flex;
+      align-items: center;
     }
 
     .chip-empty {
@@ -876,13 +879,13 @@
     .modal-close {
       background: none;
       border: none;
-      font-size: 1.1rem;
       cursor: pointer;
       color: var(--muted);
       padding: 5px 8px;
-      line-height: 1;
+      display: flex;
+      align-items: center;
       border-radius: 6px;
-      transition: background 0.12s;
+      transition: background 0.12s, color 0.12s;
     }
 
     .modal-close:hover { background: var(--bg); color: var(--text); }
@@ -931,6 +934,9 @@
       opacity: 1;
       transform: translateY(0);
     }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin-anim { animation: spin 0.8s linear infinite; display: block; }
   </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -969,19 +975,19 @@
 
       <nav>
         <a class="nav-link" data-section="linii" href="#">
-          <span class="nav-icon">🚌</span> Linii
+          <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><circle cx="7.5" cy="18.5" r="1.5"/><circle cx="16.5" cy="18.5" r="1.5"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span> Linii
         </a>
         <a class="nav-link" data-section="statii" href="#">
-          <span class="nav-icon">📍</span> Stații
+          <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21S5 14.25 5 9a7 7 0 1 1 14 0c0 5.25-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></span> Stații
         </a>
         <a class="nav-link" data-section="orare" href="#">
-          <span class="nav-icon">🕐</span> Orare
+          <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 15"/></svg></span> Orare
         </a>
       </nav>
 
       <div class="sidebar-footer">
         <button class="btn-logout" id="logout-btn">
-          <span>⬅</span> Deconectare
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Deconectare
         </button>
       </div>
     </aside>
@@ -1126,7 +1132,7 @@
     <div class="modal-box">
       <div class="modal-header">
         <h4 id="route-editor-title">Traseu linie</h4>
-        <button class="modal-close" onclick="closeRouteEditor()">✕</button>
+        <button class="modal-close" onclick="closeRouteEditor()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <div class="modal-body">
         <div class="route-directions">
@@ -1163,7 +1169,7 @@
     <div class="modal-box" style="max-width:700px;">
       <div class="modal-header">
         <h4 id="station-form-title">Adaugă stație nouă</h4>
-        <button class="modal-close" onclick="hideStationForm()">✕</button>
+        <button class="modal-close" onclick="hideStationForm()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <div class="modal-body">
         <div class="form-row">
@@ -1199,7 +1205,7 @@
     <div class="modal-box modal-sm">
       <div class="modal-header">
         <h4 id="confirm-modal-title">Confirmare</h4>
-        <button class="modal-close" onclick="closeConfirmModal()">✕</button>
+        <button class="modal-close" onclick="closeConfirmModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <div class="modal-body">
         <p id="confirm-modal-text" style="font-size:0.9375rem;color:var(--text);line-height:1.6;"></p>
@@ -1213,7 +1219,7 @@
 
   <!-- ── Auto-publish toast ─────────────────────────────────── -->
   <div id="autopublish-toast">
-    <span id="autopublish-toast-icon">⏳</span>
+    <span id="autopublish-toast-icon"></span>
     <span id="autopublish-toast-text">Se publică…</span>
   </div>
 
@@ -1261,9 +1267,16 @@
     let _publishDebounce = null;
     let _toastHideTimer = null;
 
-    function showToast(icon, text) {
+    const _ICON = {
+      loading: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="spin-anim"><circle cx="12" cy="12" r="9" stroke-opacity="0.2"/><path d="M12 3a9 9 0 0 1 9 9"/></svg>`,
+      success: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+      error: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+      upload: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="5"/><polyline points="7 10 12 5 17 10"/><line x1="4" y1="21" x2="20" y2="21"/></svg>`,
+    };
+
+    function showToast(type, text) {
       const toast = document.getElementById('autopublish-toast');
-      document.getElementById('autopublish-toast-icon').textContent = icon;
+      document.getElementById('autopublish-toast-icon').innerHTML = _ICON[type] || '';
       document.getElementById('autopublish-toast-text').textContent = text;
       toast.classList.add('visible');
       if (_toastHideTimer) clearTimeout(_toastHideTimer);
@@ -1276,21 +1289,21 @@
     }
 
     async function silentPublish() {
-      showToast('⏳', 'Se publică…');
+      showToast('loading', 'Se publică…');
       try {
         const res = await apiFetch('/api/admin/publish', { method: 'POST' });
         if (res && res.ok) {
           const data = await res.json();
-          showToast('✅', 'Publicat');
+          showToast('success', 'Publicat');
           hideToast(2000);
           const tsEl = document.getElementById('publish-last-ts');
           if (tsEl) tsEl.textContent = formatPublishTs(data.published_at);
         } else {
-          showToast('❌', 'Eroare publish');
+          showToast('error', 'Eroare publish');
           hideToast(3000);
         }
       } catch {
-        showToast('❌', 'Eroare rețea');
+        showToast('error', 'Eroare rețea');
         hideToast(3000);
       }
     }
@@ -2132,7 +2145,7 @@
           const chip = document.createElement('span');
           chip.className = 'minute-chip';
           chip.title = `Șterge minutul ${m}`;
-          chip.innerHTML = `${String(m).padStart(2,'0')}<span class="chip-remove">✕</span>`;
+          chip.innerHTML = `${String(m).padStart(2,'0')}<span class="chip-remove"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>`;
           chip.addEventListener('click', () => removeMinute(hourStr, m));
           container.appendChild(chip);
         });
@@ -2319,22 +2332,22 @@
 
       // Disable & show spinner text
       btn.disabled = true;
-      btn.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;">⏳</span> Se publică…';
+      btn.innerHTML = `${_ICON.loading} Se publică…`;
 
       // Clear previous banner
       banner.style.display = 'none';
-      banner.textContent = '';
+      banner.innerHTML = '';
 
       try {
         const res = await apiFetch('/api/admin/publish', { method: 'POST' });
-        if (!res) { btn.disabled = false; btn.innerHTML = '🚀 Publică acum'; return; }
+        if (!res) { btn.disabled = false; btn.innerHTML = `${_ICON.upload} Publică acum`; return; }
 
         if (res.ok) {
           const data = await res.json();
           banner.style.background = '#dcfce7';
           banner.style.color = '#15803d';
           banner.style.border = '1px solid #86efac';
-          banner.textContent = '✅ Publicat cu succes! network_data.js și stations_coords.js au fost actualizate.';
+          banner.innerHTML = `${_ICON.success} Publicat cu succes! network_data.js și stations_coords.js au fost actualizate.`;
           banner.style.display = 'block';
           if (tsEl) tsEl.textContent = formatPublishTs(data.published_at);
         } else {
@@ -2342,18 +2355,18 @@
           banner.style.background = '#fee2e2';
           banner.style.color = '#dc2626';
           banner.style.border = '1px solid #fca5a5';
-          banner.textContent = '❌ Eroare: ' + (err.detail || 'Publicarea a eșuat.');
+          banner.innerHTML = `${_ICON.error} Eroare: ` + (err.detail || 'Publicarea a eșuat.');
           banner.style.display = 'block';
         }
       } catch (e) {
         banner.style.background = '#fee2e2';
         banner.style.color = '#dc2626';
         banner.style.border = '1px solid #fca5a5';
-        banner.textContent = '❌ Eroare de rețea. Încearcă din nou.';
+        banner.innerHTML = `${_ICON.error} Eroare de rețea. Încearcă din nou.`;
         banner.style.display = 'block';
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '🚀 Publică acum';
+        btn.innerHTML = `${_ICON.upload} Publică acum`;
       }
     }
 
