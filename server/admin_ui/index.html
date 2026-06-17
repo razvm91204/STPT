@@ -828,6 +828,74 @@
       margin-top: 16px;
     }
 
+    /* ── Stații by-line picker ──────────────────────────────── */
+    .statii-picker-sub {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .statii-lines-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .statii-line-btn {
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      transition: opacity 0.12s, transform 0.1s;
+    }
+    .statii-line-btn:hover { opacity: 0.8; transform: translateY(-1px); }
+    .statii-line-btn.type-tram { background: #1a73e8; color: #fff; }
+    .statii-line-btn.type-bus  { background: var(--purple); color: #fff; }
+    .statii-line-btn.type-met  { background: #e8711a; color: #fff; }
+
+    .statii-back-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .btn-back-statii {
+      background: none;
+      border: 1.5px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.8125rem;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.12s;
+    }
+    .btn-back-statii:hover { background: var(--border); }
+    .statii-dir-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin: 20px 0 8px;
+    }
+    .no-coord-badge {
+      font-size: 0.7rem;
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      border-radius: 4px;
+      padding: 1px 5px;
+      margin-left: 6px;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
     @keyframes spin {
       from { transform: rotate(0deg); }
       to   { transform: rotate(360deg); }
@@ -1059,24 +1127,38 @@
         <section id="section-statii">
           <div class="section-toolbar">
             <h3>Stații</h3>
-            <button class="btn btn-add" onclick="showStationForm(null)">+ Adaugă stație</button>
           </div>
 
-          <div id="stations-error" class="inline-error"></div>
+          <div id="statii-error" class="inline-error"></div>
 
-          <table class="data-table" id="stations-table">
-            <thead>
-              <tr>
-                <th>Nume</th>
-                <th>Latitudine</th>
-                <th>Longitudine</th>
-                <th>Acțiuni</th>
-              </tr>
-            </thead>
-            <tbody id="stations-tbody">
-              <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px;">Se încarcă...</td></tr>
-            </tbody>
-          </table>
+          <!-- View 1: line picker -->
+          <div id="statii-picker">
+            <p class="statii-picker-sub">Selectați o linie pentru a vedea și edita coordonatele stațiilor ei:</p>
+            <div class="statii-lines-grid" id="statii-lines-grid">
+              <span style="color:var(--muted);font-size:0.875rem;">Se încarcă...</span>
+            </div>
+          </div>
+
+          <!-- View 2: stations for selected line -->
+          <div id="statii-detail" style="display:none;">
+            <div class="statii-back-row">
+              <button class="btn-back-statii" onclick="backToStatiiPicker()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                Toate liniile
+              </button>
+              <h4 id="statii-detail-title" style="font-size:1.125rem;font-weight:700;"></h4>
+            </div>
+            <div class="statii-dir-label">Dus</div>
+            <table class="data-table">
+              <thead><tr><th>Stație</th><th>Latitudine</th><th>Longitudine</th><th></th></tr></thead>
+              <tbody id="statii-dus-tbody"></tbody>
+            </table>
+            <div class="statii-dir-label">Întors</div>
+            <table class="data-table">
+              <thead><tr><th>Stație</th><th>Latitudine</th><th>Longitudine</th><th></th></tr></thead>
+              <tbody id="statii-intors-tbody"></tbody>
+            </table>
+          </div>
         </section>
 
         <section id="section-orare">
@@ -1721,34 +1803,71 @@
     let stationMap = null;
     let stationMarker = null;
 
-    async function loadStations() {
-      const tbody = document.getElementById('stations-tbody');
-      const errEl = document.getElementById('stations-error');
-      errEl.textContent = '';
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px;">Se încarcă...</td></tr>';
+    let _currentStatiiLine = null;
 
+    async function loadStations() {
+      _currentStatiiLine = null;
       const data = await apiFetchJSON('/api/admin/stations');
       if (!data) return;
       stationsData = data;
-
       refreshStationsDatalist();
+      await _renderStatiiPicker();
+    }
 
-      if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px;">Nicio stație adăugată.</td></tr>';
+    async function _renderStatiiPicker() {
+      document.getElementById('statii-error').textContent = '';
+      const lines = await apiFetchJSON('/api/admin/lines');
+      if (!lines) return;
+      const grid = document.getElementById('statii-lines-grid');
+      grid.innerHTML = '';
+      [...lines].sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }))
+        .forEach(line => {
+          const btn = document.createElement('button');
+          btn.className = `statii-line-btn type-${line.type}`;
+          btn.textContent = line.id;
+          btn.title = `Linia ${line.id}`;
+          btn.onclick = () => showStatiiForLine(line.id);
+          grid.appendChild(btn);
+        });
+      document.getElementById('statii-picker').style.display = '';
+      document.getElementById('statii-detail').style.display = 'none';
+    }
+
+    async function showStatiiForLine(lineId) {
+      _currentStatiiLine = lineId;
+      document.getElementById('statii-error').textContent = '';
+      const structure = await apiFetchJSON(`/api/admin/lines/${encodeURIComponent(lineId)}/structure`);
+      if (!structure) return;
+      document.getElementById('statii-detail-title').textContent = `Linia ${lineId}`;
+      renderStatiiDirTable('statii-dus-tbody', structure.dus || []);
+      renderStatiiDirTable('statii-intors-tbody', structure.intors || []);
+      document.getElementById('statii-picker').style.display = 'none';
+      document.getElementById('statii-detail').style.display = '';
+    }
+
+    function backToStatiiPicker() {
+      _currentStatiiLine = null;
+      document.getElementById('statii-picker').style.display = '';
+      document.getElementById('statii-detail').style.display = 'none';
+    }
+
+    function renderStatiiDirTable(tbodyId, names) {
+      const tbody = document.getElementById(tbodyId);
+      const stMap = Object.fromEntries(stationsData.map(s => [s.name, s]));
+      if (!names.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:16px;">—</td></tr>';
         return;
       }
-
       tbody.innerHTML = '';
-      data.forEach(st => {
+      names.forEach(name => {
+        const st = stMap[name];
+        const hasCoord = st && (st.lat !== 0 || st.lon !== 0);
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><strong>${escHtml(st.name)}</strong></td>
-          <td>${st.lat != null ? st.lat.toFixed(6) : '—'}</td>
-          <td>${st.lon != null ? st.lon.toFixed(6) : '—'}</td>
-          <td style="display:flex;gap:6px;">
-            <button class="btn btn-edit btn-sm" onclick="showStationForm('${escAttr(st.name)}')">Editează</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteStation('${escAttr(st.name)}')">Șterge</button>
-          </td>
+          <td><strong>${escHtml(name)}</strong>${!hasCoord ? '<span class="no-coord-badge">fără coord</span>' : ''}</td>
+          <td>${hasCoord ? st.lat.toFixed(6) : '—'}</td>
+          <td>${hasCoord ? st.lon.toFixed(6) : '—'}</td>
+          <td style="width:90px;"><button class="btn btn-edit btn-sm" onclick="showStationForm('${escAttr(name)}')">Editează</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -1763,25 +1882,6 @@
         opt.value = st.name;
         dl.appendChild(opt);
       });
-    }
-
-    async function deleteStation(name) {
-      showConfirmModal(
-        'Șterge stație',
-        `Ești sigur că vrei să ștergi stația "${name}"? Va fi ștearsă și din toate traseele și orarele.`,
-        'Șterge stația',
-        async () => {
-          const res = await apiFetch(`/api/admin/stations/${encodeURIComponent(name)}`, { method: 'DELETE' });
-          if (res && !res.ok) {
-            const errEl = document.getElementById('stations-error');
-            const err = await res.json().catch(() => ({}));
-            errEl.textContent = err.detail || 'Eroare la ștergere.';
-          } else {
-            loadStations();
-            triggerAutoPublish();
-          }
-        }
-      );
     }
 
     function showStationForm(name) {
@@ -1927,7 +2027,10 @@
         return;
       }
       hideStationForm();
-      loadStations();
+      // Refresh station data without resetting to the picker
+      const refreshed = await apiFetchJSON('/api/admin/stations');
+      if (refreshed) { stationsData = refreshed; refreshStationsDatalist(); }
+      if (_currentStatiiLine) await showStatiiForLine(_currentStatiiLine);
       triggerAutoPublish();
     }
 
