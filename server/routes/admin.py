@@ -9,16 +9,15 @@ import os
 from datetime import datetime, timezone
 from typing import List, Optional
 
+import jwt as _jwt
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import jwt, JWTError
 from pydantic import BaseModel, Field
 
+from server.config import SECRET_KEY, ALGORITHM
 from server.db import get_db
 
 security = HTTPBearer()
-SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-in-production")
-ALGORITHM = "HS256"
 
 
 def get_current_user(
@@ -26,12 +25,12 @@ def get_current_user(
 ) -> str:
     """Decode the Bearer JWT and return the username (sub claim)."""
     try:
-        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = _jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
         if not username:
             raise ValueError("no sub")
         return username
-    except (JWTError, ValueError):
+    except (_jwt.PyJWTError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
@@ -49,7 +48,7 @@ async def me(username: str = Depends(get_current_user)):
     return {"username": username}
 
 
-# ── Pydantic models ─────────────────────────────────────────────────────────
+# ── Pydantic models ──────────────────────────────────────────────────────────
 
 class LineCreate(BaseModel):
     id: str = Field(min_length=1, max_length=16)
@@ -84,7 +83,7 @@ class StationAdd(BaseModel):
     position: Optional[int] = None
 
 
-# ── Lines CRUD ───────────────────────────────────────────────────────────────
+# ── Lines CRUD ────────────────────────────────────────────────────────────────
 
 @router.get("/lines")
 async def list_lines():
@@ -149,7 +148,7 @@ async def delete_line(line_id: str):
         db.close()
 
 
-# ── Stations CRUD ────────────────────────────────────────────────────────────
+# ── Stations CRUD ─────────────────────────────────────────────────────────────
 
 @router.get("/stations")
 async def list_stations():
@@ -192,11 +191,9 @@ async def update_station(station_name: str, body: StationUpdate):
         new_name = body.name if body.name is not None else station_name
 
         if new_name != station_name:
-            # Check target name doesn't already exist
             conflict = db.execute("SELECT name FROM stations WHERE name=?", (new_name,)).fetchone()
             if conflict:
                 raise HTTPException(status_code=409, detail=f"Station '{new_name}' already exists")
-            # Cascade rename
             db.execute(
                 "UPDATE line_stations SET station_name=? WHERE station_name=?",
                 (new_name, station_name),
@@ -236,7 +233,7 @@ async def delete_station(station_name: str):
         db.close()
 
 
-# ── Line structure ───────────────────────────────────────────────────────────
+# ── Line structure ────────────────────────────────────────────────────────────
 
 @router.get("/lines/{line_id}/structure")
 async def get_line_structure(line_id: str):
@@ -322,7 +319,6 @@ async def add_station_to_structure(line_id: str, direction: str, body: StationAd
             pos = max_pos + 1
         else:
             pos = body.position
-            # Shift existing stations at or after this position
             db.execute(
                 "UPDATE line_stations SET position=position+1 WHERE line_id=? AND direction=? AND position>=?",
                 (line_id, direction, pos),
@@ -361,7 +357,7 @@ async def remove_station_from_structure(line_id: str, direction: str, station_na
         db.close()
 
 
-# ── Schedules ────────────────────────────────────────────────────────────────
+# ── Schedules ─────────────────────────────────────────────────────────────────
 
 import json as _json
 
@@ -427,7 +423,6 @@ async def put_schedule(line_id: str, direction: str, station_name: str, day_type
     _check_direction(direction)
     _check_day_type(day_type)
     validate_schedule(body.schedule)
-    # Strip empty hour lists to keep representation consistent with empty-schedule GET
     clean = {k: v for k, v in body.schedule.items() if v}
     db = get_db()
     try:
@@ -452,10 +447,12 @@ async def put_schedule(line_id: str, direction: str, station_name: str, day_type
         db.close()
 
 
-# ── Publish ──────────────────────────────────────────────────────────────────
+# ── Publish ───────────────────────────────────────────────────────────────────
 
-# Compute repo root as two levels up from this file (server/routes/admin.py)
-_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_PUBLIC_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "public",
+)
 
 
 @router.get("/publish/status")
@@ -471,7 +468,7 @@ async def publish_status():
 
 @router.post("/publish")
 async def publish():
-    """Generate network_data.js and stations_coords.js from the DB and write them to the repo root."""
+    """Generate network_data.js and stations_coords.js from the DB and write them to public/."""
     from server.db import DB_PATH
     from server.export import generate_network_data_js, generate_stations_coords_js
 
@@ -481,10 +478,9 @@ async def publish():
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Export failed: {exc}")
 
-    network_path = os.path.join(_REPO_ROOT, "network_data.js")
-    coords_path = os.path.join(_REPO_ROOT, "stations_coords.js")
+    network_path = os.path.join(_PUBLIC_DIR, "network_data.js")
+    coords_path = os.path.join(_PUBLIC_DIR, "stations_coords.js")
 
-    # Write via temp files so a partial failure doesn't leave split state
     try:
         import tempfile, shutil as _shutil
         def _atomic_write(path: str, content: str) -> None:
@@ -525,3 +521,28 @@ async def publish():
         "network_size": len(network_js.encode("utf-8")),
         "coords_size": len(coords_js.encode("utf-8")),
     }
+
+
+# ── Backup ────────────────────────────────────────────────────────────────────
+
+@router.get("/backup")
+async def backup():
+    """Stream a full sqlite3 dump of the database as a downloadable .sql file."""
+    import sqlite3 as _sqlite3
+    from fastapi.responses import StreamingResponse
+    from server.db import DB_PATH
+
+    def _dump():
+        conn = _sqlite3.connect(DB_PATH)
+        try:
+            for line in conn.iterdump():
+                yield line + "\n"
+        finally:
+            conn.close()
+
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    return StreamingResponse(
+        _dump(),
+        media_type="text/plain; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="stpt-backup-{ts}.sql"'},
+    )

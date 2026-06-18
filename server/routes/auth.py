@@ -5,20 +5,21 @@ auth.py — Authentication routes.
 POST /api/auth/login
   Body: { "username": "...", "password": "..." }
   Returns: { "access_token": "...", "token_type": "bearer" }
+
+Rate limited: 5 requests/minute per IP.
 """
 
-import os
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, HTTPException, status
+import jwt as _jwt
+from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-router = APIRouter()
+from server.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from server.limiter import limiter
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-in-production")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+router = APIRouter()
 
 
 class LoginRequest(BaseModel):
@@ -27,16 +28,15 @@ class LoginRequest(BaseModel):
 
 
 def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
-    from jose import jwt
-
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode["exp"] = expire
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return _jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 @router.post("/login")
-async def login(body: LoginRequest):
+@limiter.limit("5/minute")
+async def login(request: Request, body: LoginRequest):
     """Authenticate a user and return a JWT access token."""
     import bcrypt as _bcrypt
     from server.db import get_db
