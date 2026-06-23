@@ -29,22 +29,17 @@ const AppModule = (function () {
       document.getElementById('to-input').value   = allSt.find(s => /piata.*victori|victoriei/i.test(DataModule.normalize(s))) || allSt[1];
     }
 
-    // Populează selectoarele de oră/minut (24h, minute din 5 în 5)
-    const hourSel = document.getElementById('sel-hour');
-    const minSel  = document.getElementById('sel-min');
+    // Populează selectorul de oră (24h, intervale de 15 min)
+    const timeSel = document.getElementById('sel-time');
     for (let h = 0; h < 24; h++) {
-      const o = document.createElement('option');
-      o.value = o.textContent = String(h).padStart(2, '0');
-      hourSel.appendChild(o);
-    }
-    for (let m = 0; m < 60; m += 5) {
-      const o = document.createElement('option');
-      o.value = o.textContent = String(m).padStart(2, '0');
-      minSel.appendChild(o);
+      for (let m = 0; m < 60; m += 15) {
+        const o = document.createElement('option');
+        o.value = o.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        timeSel.appendChild(o);
+      }
     }
     const now = new Date();
-    hourSel.value = String(now.getHours()).padStart(2, '0');
-    minSel.value  = String(Math.floor(now.getMinutes() / 5) * 5).padStart(2, '0');
+    timeSel.value = `${String(now.getHours()).padStart(2,'0')}:${String(Math.floor(now.getMinutes()/15)*15).padStart(2,'0')}`;
 
     // Prima căutare
     cauta();
@@ -120,7 +115,7 @@ const AppModule = (function () {
   function cauta() {
     let fromRaw = document.getElementById('from-input').value.trim();
     let toRaw   = document.getElementById('to-input').value.trim();
-    const time  = `${document.getElementById('sel-hour').value}:${document.getElementById('sel-min').value}`;
+    const time  = document.getElementById('sel-time').value;
     const day   = document.getElementById('sel-day').value;
     const el    = document.getElementById('results');
 
