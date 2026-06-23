@@ -192,8 +192,16 @@
     transition: border-color 0.15s;
   }
   .planner-select:focus { border-color: var(--purple); }
-  input[type="time"]::-webkit-datetime-edit-ampm-field { display: none; }
-  input[type="time"] { -webkit-appearance: none; }
+  .time-select-wrap {
+    display: flex; align-items: center;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    overflow: hidden; background: var(--white);
+  }
+  .time-part-select {
+    border: none !important; border-radius: 0 !important;
+    flex: 1; min-width: 0; padding-right: 2px;
+  }
+  .time-sep { font-weight: 700; color: var(--muted); flex-shrink: 0; font-size: 13px; }
   .search-btn {
     width: 100%; height: 44px; margin-bottom: 1rem;
     background: var(--purple); color: #fff; border: none; border-radius: 11px;
@@ -435,7 +443,11 @@
               <option value="vacation">Vacanță</option>
               <option value="holiday">Duminică / Sărbătoare</option>
             </select>
-            <input type="time" id="sel-time" class="planner-select" value="08:00">
+            <div class="time-select-wrap">
+              <select id="sel-hour" class="planner-select time-part-select"></select>
+              <span class="time-sep">:</span>
+              <select id="sel-min" class="planner-select time-part-select"></select>
+            </div>
           </div>
           <button class="search-btn" onclick="AppModule.cauta()">Caută rută &rarr;</button>
 

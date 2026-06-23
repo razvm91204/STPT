@@ -29,11 +29,22 @@ const AppModule = (function () {
       document.getElementById('to-input').value   = allSt.find(s => /piata.*victori|victoriei/i.test(DataModule.normalize(s))) || allSt[1];
     }
 
-    // Oră curentă
+    // Populează selectoarele de oră/minut (24h, minute din 5 în 5)
+    const hourSel = document.getElementById('sel-hour');
+    const minSel  = document.getElementById('sel-min');
+    for (let h = 0; h < 24; h++) {
+      const o = document.createElement('option');
+      o.value = o.textContent = String(h).padStart(2, '0');
+      hourSel.appendChild(o);
+    }
+    for (let m = 0; m < 60; m += 5) {
+      const o = document.createElement('option');
+      o.value = o.textContent = String(m).padStart(2, '0');
+      minSel.appendChild(o);
+    }
     const now = new Date();
-    const hh  = String(now.getHours()).padStart(2,'0');
-    const mm  = String(now.getMinutes()).padStart(2,'0');
-    document.getElementById('sel-time').value = `${hh}:${mm}`;
+    hourSel.value = String(now.getHours()).padStart(2, '0');
+    minSel.value  = String(Math.floor(now.getMinutes() / 5) * 5).padStart(2, '0');
 
     // Prima căutare
     cauta();
@@ -109,7 +120,7 @@ const AppModule = (function () {
   function cauta() {
     let fromRaw = document.getElementById('from-input').value.trim();
     let toRaw   = document.getElementById('to-input').value.trim();
-    const time  = document.getElementById('sel-time').value;
+    const time  = `${document.getElementById('sel-hour').value}:${document.getElementById('sel-min').value}`;
     const day   = document.getElementById('sel-day').value;
     const el    = document.getElementById('results');
 
