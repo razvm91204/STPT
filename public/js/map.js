@@ -45,7 +45,13 @@ const MapModule = (function () {
     if (typeof L === 'undefined') { console.warn('MapModule: Leaflet lipsă'); return; }
     if (typeof STATIONS_COORDS === 'undefined') { console.warn('MapModule: stations_coords.js lipsă'); return; }
 
-    _map = L.map('map', { zoomControl: false }).setView(CENTER, 13);
+    const TM_BOUNDS = L.latLngBounds(L.latLng(45.68, 21.10), L.latLng(45.83, 21.35));
+    _map = L.map('map', {
+      zoomControl: false,
+      maxBounds: TM_BOUNDS,
+      maxBoundsViscosity: 1.0,
+      minZoom: 11,
+    }).setView(CENTER, 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
       maxZoom: 18

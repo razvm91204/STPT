@@ -832,34 +832,72 @@
     .statii-picker-sub {
       font-size: 0.875rem;
       color: var(--muted);
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
-    .statii-lines-grid {
+    .statii-lines-grid { display: flex; flex-direction: column; gap: 20px; }
+
+    .statii-type-section {}
+    .statii-type-header {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .statii-type-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
     }
-    .statii-line-btn {
-      padding: 5px 14px;
-      border-radius: 20px;
-      border: none;
+    .statii-line-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 72px;
+      padding: 10px 14px 8px;
+      border-radius: 12px;
+      border: 2px solid transparent;
       cursor: pointer;
       font-family: inherit;
-      font-size: 0.875rem;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      transition: opacity 0.12s, transform 0.1s;
+      transition: transform 0.1s, box-shadow 0.12s, opacity 0.12s;
+      gap: 4px;
     }
-    .statii-line-btn:hover { opacity: 0.8; transform: translateY(-1px); }
-    .statii-line-btn.type-tram { background: #1a73e8; color: #fff; }
-    .statii-line-btn.type-bus  { background: var(--purple); color: #fff; }
-    .statii-line-btn.type-met  { background: #e8711a; color: #fff; }
+    .statii-line-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .statii-line-card.type-tram  { background: #1a73e8; color: #fff; }
+    .statii-line-card.type-bus   { background: var(--purple); color: #fff; }
+    .statii-line-card.type-met   { background: #e8711a; color: #fff; }
+    .statii-line-card.all-geocoded { border-color: #22c55e; box-shadow: 0 0 0 1px #22c55e; }
+    .slc-id {
+      font-size: 1.125rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+    .slc-badge {
+      font-size: 0.6rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.22);
+      border-radius: 4px;
+      padding: 1px 5px;
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+    .slc-ok {
+      display: flex;
+      align-items: center;
+      opacity: 0.75;
+    }
 
+    /* ── Stații detail header ───────────────────────────────── */
     .statii-back-row {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     .btn-back-statii {
       background: none;
@@ -876,6 +914,62 @@
       transition: background 0.12s;
     }
     .btn-back-statii:hover { background: var(--border); }
+
+    /* ── Geocoding progress bar ─────────────────────────────── */
+    .statii-progress-wrap {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .statii-progress-label {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+    .statii-progress-label strong { color: var(--text); }
+    .statii-progress-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .statii-progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: #22c55e;
+      transition: width 0.3s ease;
+    }
+    .statii-progress-fill.partial { background: #f59e0b; }
+    .statii-progress-fill.empty   { background: #ef4444; }
+
+    /* ── Dus / Întors tabs ──────────────────────────────────── */
+    .statii-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .statii-tab-btn {
+      padding: 7px 20px;
+      border: none;
+      background: none;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.12s, border-color 0.12s;
+    }
+    .statii-tab-btn:hover { color: var(--text); }
+    .statii-tab-btn.active { color: var(--purple); border-bottom-color: var(--purple); }
+    .statii-tab-panel { display: none; }
+    .statii-tab-panel.active { display: block; }
+
+    /* ── Station rows ───────────────────────────────────────── */
     .statii-dir-label {
       font-size: 0.75rem;
       font-weight: 700;
@@ -895,6 +989,8 @@
       white-space: nowrap;
       vertical-align: middle;
     }
+    tr.missing-coord td { background: #fff7f7; }
+    tr.missing-coord td:first-child { border-left: 3px solid #fca5a5; }
 
     @keyframes spin {
       from { transform: rotate(0deg); }
@@ -1148,16 +1244,34 @@
               </button>
               <h4 id="statii-detail-title" style="font-size:1.125rem;font-weight:700;"></h4>
             </div>
-            <div class="statii-dir-label">Dus</div>
-            <table class="data-table">
-              <thead><tr><th>Stație</th><th>Latitudine</th><th>Longitudine</th><th></th></tr></thead>
-              <tbody id="statii-dus-tbody"></tbody>
-            </table>
-            <div class="statii-dir-label">Întors</div>
-            <table class="data-table">
-              <thead><tr><th>Stație</th><th>Latitudine</th><th>Longitudine</th><th></th></tr></thead>
-              <tbody id="statii-intors-tbody"></tbody>
-            </table>
+
+            <div class="statii-progress-wrap" id="statii-progress-wrap">
+              <div class="statii-progress-label">
+                <span>Geocodare: <strong id="statii-progress-text">—</strong></span>
+                <span id="statii-progress-pct" style="color:var(--muted);"></span>
+              </div>
+              <div class="statii-progress-bar">
+                <div class="statii-progress-fill" id="statii-progress-fill" style="width:0%"></div>
+              </div>
+            </div>
+
+            <div class="statii-tabs">
+              <button class="statii-tab-btn active" id="tab-btn-dus" onclick="switchStatiiTab('dus')">Dus</button>
+              <button class="statii-tab-btn" id="tab-btn-intors" onclick="switchStatiiTab('intors')">Întors</button>
+            </div>
+
+            <div class="statii-tab-panel active" id="statii-tab-dus">
+              <table class="data-table">
+                <thead><tr><th>Stație</th><th>Latitudine</th><th>Longitudine</th><th></th></tr></thead>
+                <tbody id="statii-dus-tbody"></tbody>
+              </table>
+            </div>
+            <div class="statii-tab-panel" id="statii-tab-intors">
+              <table class="data-table">
+                <thead><tr><th>Stație</th><th>Latitudine</th><th>Longitudine</th><th></th></tr></thead>
+                <tbody id="statii-intors-tbody"></tbody>
+              </table>
+            </div>
           </div>
         </section>
 
@@ -1818,19 +1932,88 @@
       document.getElementById('statii-error').textContent = '';
       const lines = await apiFetchJSON('/api/admin/lines');
       if (!lines) return;
+
+      const sorted = [...lines].sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+
+      // Fetch all structures in parallel to compute no-coord counts
+      const stMap = Object.fromEntries(stationsData.map(s => [s.name, s]));
+      const structures = await Promise.all(
+        sorted.map(l => apiFetchJSON(`/api/admin/lines/${encodeURIComponent(l.id)}/structure`))
+      );
+
+      const lineData = sorted.map((l, i) => {
+        const struct = structures[i] || {};
+        const allNames = [...new Set([...(struct.dus || []), ...(struct.intors || [])])];
+        const noCoord = allNames.filter(n => { const s = stMap[n]; return !s || (s.lat === 0 && s.lon === 0); }).length;
+        return { ...l, noCoord, total: allNames.length };
+      });
+
       const grid = document.getElementById('statii-lines-grid');
       grid.innerHTML = '';
-      [...lines].sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }))
-        .forEach(line => {
-          const btn = document.createElement('button');
-          btn.className = `statii-line-btn type-${line.type}`;
-          btn.textContent = line.id;
-          btn.title = `Linia ${line.id}`;
-          btn.onclick = () => showStatiiForLine(line.id);
-          grid.appendChild(btn);
+
+      const GROUPS = [
+        { key: 'tram', label: 'Tramvai' },
+        { key: 'bus',  label: 'Autobuz' },
+        { key: 'met',  label: 'Expres' },
+      ];
+
+      GROUPS.forEach(g => {
+        const group = lineData.filter(l => l.type === g.key);
+        if (!group.length) return;
+
+        const section = document.createElement('div');
+        section.className = 'statii-type-section';
+
+        const header = document.createElement('div');
+        header.className = 'statii-type-header';
+        header.textContent = g.label;
+        section.appendChild(header);
+
+        const row = document.createElement('div');
+        row.className = 'statii-type-row';
+
+        group.forEach(line => {
+          const card = document.createElement('button');
+          card.className = `statii-line-card type-${line.type}${line.noCoord === 0 ? ' all-geocoded' : ''}`;
+          card.title = `Linia ${line.id} — ${line.noCoord === 0 ? 'toate geocodate' : `${line.noCoord} fără coordonate`}`;
+          card.onclick = () => showStatiiForLine(line.id);
+
+          const idEl = document.createElement('span');
+          idEl.className = 'slc-id';
+          idEl.textContent = line.id;
+          card.appendChild(idEl);
+
+          if (line.noCoord > 0) {
+            const badge = document.createElement('span');
+            badge.className = 'slc-badge';
+            badge.textContent = `${line.noCoord} fără coord`;
+            card.appendChild(badge);
+          } else {
+            const ok = document.createElement('span');
+            ok.className = 'slc-ok';
+            ok.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+            card.appendChild(ok);
+          }
+
+          row.appendChild(card);
         });
+
+        section.appendChild(row);
+        grid.appendChild(section);
+      });
+
       document.getElementById('statii-picker').style.display = '';
       document.getElementById('statii-detail').style.display = 'none';
+    }
+
+    let statiiActiveDir = 'dus';
+
+    function switchStatiiTab(dir) {
+      statiiActiveDir = dir;
+      ['dus', 'intors'].forEach(d => {
+        document.getElementById(`tab-btn-${d}`).classList.toggle('active', d === dir);
+        document.getElementById(`statii-tab-${d}`).classList.toggle('active', d === dir);
+      });
     }
 
     async function showStatiiForLine(lineId) {
@@ -1838,9 +2021,26 @@
       document.getElementById('statii-error').textContent = '';
       const structure = await apiFetchJSON(`/api/admin/lines/${encodeURIComponent(lineId)}/structure`);
       if (!structure) return;
+
       document.getElementById('statii-detail-title').textContent = `Linia ${lineId}`;
       renderStatiiDirTable('statii-dus-tbody', structure.dus || []);
       renderStatiiDirTable('statii-intors-tbody', structure.intors || []);
+
+      // Progress bar
+      const stMap = Object.fromEntries(stationsData.map(s => [s.name, s]));
+      const allNames = [...new Set([...(structure.dus || []), ...(structure.intors || [])])];
+      const geocoded = allNames.filter(n => { const s = stMap[n]; return s && (s.lat !== 0 || s.lon !== 0); }).length;
+      const total = allNames.length;
+      const pct = total ? Math.round(geocoded / total * 100) : 100;
+      document.getElementById('statii-progress-text').textContent = `${geocoded} / ${total} stații`;
+      document.getElementById('statii-progress-pct').textContent = `${pct}%`;
+      const fill = document.getElementById('statii-progress-fill');
+      fill.style.width = `${pct}%`;
+      fill.className = 'statii-progress-fill' + (pct === 100 ? '' : pct >= 50 ? ' partial' : ' empty');
+
+      // Reset to Dus tab
+      switchStatiiTab('dus');
+
       document.getElementById('statii-picker').style.display = 'none';
       document.getElementById('statii-detail').style.display = '';
     }
@@ -1863,6 +2063,7 @@
         const st = stMap[name];
         const hasCoord = st && (st.lat !== 0 || st.lon !== 0);
         const tr = document.createElement('tr');
+        if (!hasCoord) tr.className = 'missing-coord';
         tr.innerHTML = `
           <td><strong>${escHtml(name)}</strong>${!hasCoord ? '<span class="no-coord-badge">fără coord</span>' : ''}</td>
           <td>${hasCoord ? st.lat.toFixed(6) : '—'}</td>
@@ -1915,14 +2116,26 @@
       document.getElementById('station-modal').classList.add('hidden');
     }
 
+    const TM_BOUNDS = L.latLngBounds(
+      L.latLng(45.68, 21.10),
+      L.latLng(45.83, 21.35)
+    );
+    const TM_CENTER = [45.7489, 21.2087];
+
     function initStationMap() {
-      const defaultCenter = [45.7489, 21.2087];
       const lat = parseFloat(document.getElementById('sf-lat').value);
       const lon = parseFloat(document.getElementById('sf-lon').value);
-      const center = (isFinite(lat) && isFinite(lon)) ? [lat, lon] : defaultCenter;
+      const hasCoord = isFinite(lat) && isFinite(lon) && (lat !== 0 || lon !== 0);
+      const center = hasCoord ? [lat, lon] : TM_CENTER;
+      const zoom = hasCoord ? 16 : 13;
 
       if (!stationMap) {
-        stationMap = L.map('station-map').setView(center, 13);
+        stationMap = L.map('station-map', {
+          maxBounds: TM_BOUNDS,
+          maxBoundsViscosity: 1.0,
+          minZoom: 12,
+          maxZoom: 19,
+        }).setView(center, zoom);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors',
           maxZoom: 19,
@@ -1935,7 +2148,7 @@
         });
       } else {
         stationMap.invalidateSize();
-        stationMap.setView(center, 13);
+        stationMap.setView(center, zoom);
       }
 
       if (stationMarker) {
@@ -1949,7 +2162,7 @@
         });
       }
 
-      if (!isFinite(lat) || !isFinite(lon)) {
+      if (!hasCoord) {
         stationMarker.setOpacity(0);
       } else {
         stationMarker.setOpacity(1);
