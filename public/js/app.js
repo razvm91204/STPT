@@ -29,17 +29,11 @@ const AppModule = (function () {
       document.getElementById('to-input').value   = allSt.find(s => /piata.*victori|victoriei/i.test(DataModule.normalize(s))) || allSt[1];
     }
 
-    // Populează selectorul de oră (24h, intervale de 15 min)
-    const timeSel = document.getElementById('sel-time');
-    for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 15) {
-        const o = document.createElement('option');
-        o.value = o.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-        timeSel.appendChild(o);
-      }
-    }
+    // Oră curentă
     const now = new Date();
-    timeSel.value = `${String(now.getHours()).padStart(2,'0')}:${String(Math.floor(now.getMinutes()/15)*15).padStart(2,'0')}`;
+    const hh  = String(now.getHours()).padStart(2, '0');
+    const mm  = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('sel-time').value = `${hh}:${mm}`;
 
     // Prima căutare
     cauta();
