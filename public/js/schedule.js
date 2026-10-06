@@ -58,7 +58,16 @@ const ScheduleModule = (function () {
       const st = stations[k];
       if (!st) { stops.push({ name: '', time: null }); continue; }
       const times = flatten(st, dayType);
-      const t = times.find(x => x > prevTime) || null;
+      const chained = times.find(x => x > prevTime) || null;
+      // O stație cu o cursă lipsă din orar (gaură de date) poate face lanțul
+      // greedy să sară o oră întreagă la acea stație — iar din acel punct
+      // toate stațiile următoare par "normale" față de prevTime (deja decalat),
+      // deci eroarea s-ar propaga nedetectată până la capăt. De aceea comparăm
+      // la FIECARE stație cu o ancorare directă la boardTime (ca tripArrival):
+      // dacă varianta directă e mult mai devreme, lanțul e deja corupt.
+      const direct = times.find(x => x > boardTime) || null;
+      let t = chained;
+      if (direct !== null && (t === null || direct < t - 20)) t = direct;
       stops.push({ name: _cleanName(st.name), time: t });
       if (t !== null) prevTime = t;
     }
